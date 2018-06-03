@@ -11,9 +11,9 @@ author: mna12478
 language: zh-Hans
 timezone:
 
-# URL
+# URL https://mna12478.github.io
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://mna12478.github.io
+url: 
 root: /
 permalink: :title/
 permalink_defaults:

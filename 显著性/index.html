@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CNN,显著性,多级输出," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;在长期的进化中，人类拥有了在复杂环境中快速发现感兴趣目标的能力，这种高度发达的注意力机制使人们在看一张图片时，其注意点首先会落在更能刺激视觉的区域，即显著性区域。目前我们拥有海量的图像数据，而显著性目标检测即模仿人类的视觉注意力机制，在图片数据中找到最重要的信息，进行后续处理。&amp;emsp;&amp;emsp;显著性目标检测是一个偏主观的应用，不同的人在看同一张图片时，关注点也会不同">
+<meta name="keywords" content="CNN,显著性,多级输出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="显著性">
+<meta property="og:url" content="https://mna12478.github.io/显著性/index.html">
+<meta property="og:site_name" content="个人笔记">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;在长期的进化中，人类拥有了在复杂环境中快速发现感兴趣目标的能力，这种高度发达的注意力机制使人们在看一张图片时，其注意点首先会落在更能刺激视觉的区域，即显著性区域。目前我们拥有海量的图像数据，而显著性目标检测即模仿人类的视觉注意力机制，在图片数据中找到最重要的信息，进行后续处理。&amp;emsp;&amp;emsp;显著性目标检测是一个偏主观的应用，不同的人在看同一张图片时，关注点也会不同">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/智能裁切.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/fcn_vgg.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/FCN.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/分割结果.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/hed_vgg.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/final_predict.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/deep_supervision.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/weighted_loss.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/exper_table.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/exper_vis.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/enhanced_HED.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/HED_DSS.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/f-measure.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/conv_side_output.png">
+<meta property="og:image" content="https://mna12478.github.io/images/salient/problem.png">
+<meta property="og:updated_time" content="2019-09-25T02:15:47.235Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="显著性">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;在长期的进化中，人类拥有了在复杂环境中快速发现感兴趣目标的能力，这种高度发达的注意力机制使人们在看一张图片时，其注意点首先会落在更能刺激视觉的区域，即显著性区域。目前我们拥有海量的图像数据，而显著性目标检测即模仿人类的视觉注意力机制，在图片数据中找到最重要的信息，进行后续处理。&amp;emsp;&amp;emsp;显著性目标检测是一个偏主观的应用，不同的人在看同一张图片时，关注点也会不同">
+<meta name="twitter:image" content="https://mna12478.github.io/images/salient/智能裁切.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://mna12478.github.io/显著性/"/>
+
+
+
+
+
+  <title>显著性 | 个人笔记</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">个人笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/显著性/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mna12478">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="个人笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">显著性</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-07T16:54:55+08:00">
+                2018-04-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;在长期的进化中，人类拥有了在复杂环境中快速发现感兴趣目标的能力，这种高度发达的注意力机制使人们在看一张图片时，其注意点首先会落在更能刺激视觉的区域，即显著性区域。目前我们拥有海量的图像数据，而显著性目标检测即模仿人类的视觉注意力机制，在图片数据中找到最重要的信息，进行后续处理。<br>&emsp;&emsp;显著性目标检测是一个偏主观的应用，不同的人在看同一张图片时，关注点也会不同。在标注显著性目标检测的数据库时，也是请了几个人同时看一张图片，取多数人看到的显著区域作为gt。显著性目标检测的应用有：自适应压缩，内容感知的图像编辑，图像检索，缩略图裁剪，图像增强等。实际应用中，Twitter推出了图像的<a href="(https://blog.twitter.com/engineering/en_us/topics/infrastructure/2018/Smart-Auto-Cropping-of-Images.html">智能裁切功能</a>，在预览时，能自动显示显著性区域，效果如下图所示：<br>  <img src="/images/salient/智能裁切.png" alt="" title="Twitter智能裁切"><br>&emsp;&emsp;这里要介绍的是南开大学程明明教授的DSS方法，该方法目前已应用在华为mate10上，<a href="http://news.nankai.edu.cn/nkyw/system/2017/12/24/000362595.shtml" target="_blank" rel="noopener">大光圈智能拍照</a>。在介绍DSS之前，首先要引入两个参考框架：FCN和HED。<br>一、FCN<br>&emsp;&emsp;FCN(Fully Convolutional Networks)，将图像级别的分类扩展成像素级的分类，实现了语义分割，首先将VGG最后的三个全连接层换成了卷积层，然后分别独立输出三个尺度的分割结果。（在最后一层反卷积，或转置卷积进行dense prediction）<br><img src="/images/salient/fcn_vgg.png" alt="" title="FCN网络"><br>&emsp;&emsp;文章中的图及各个尺度的分割结果：<br><img src="/images/salient/FCN.png" alt="" title="FCN结构"><br><img src="/images/salient/分割结果.png" alt="" title="分割结果"><br>&emsp;&emsp;FCN的8s,16s和32s对应三种尺度的输出，但都是独立的分割结果，彼此之间没有联系。<br>&emsp;&emsp;<a href="https://github.com/shelhamer/fcn.berkeleyvision.org" target="_blank" rel="noopener">caffe源代码</a>，<a href="https://github.com/aurora95/Keras-FCN" target="_blank" rel="noopener">keras版本</a>，<a href="https://github.com/MarvinTeichmann/tensorflow-fcn" target="_blank" rel="noopener">tensorflow版本</a></p>
+<p>二、HED（Holistically-Nested Edge Detection）<br>1、HED的特点<br>&emsp;&emsp;HED是用于边缘检测的网络，思路基于FCN。以前的基于CNN的边缘检测网络多是patch-to-class模式，使用滑窗的的方法，以patch为中心。在FCN出现后，直接应用FCN做边缘检测效果不佳，原因可能是边缘检测不同于语义分割，需要更多的多尺度信息来找到边缘。所以，基于FCN，但又不同于FCN，HED结构的特点：<br>1）类似FCN，是image-to-image的<br>2）加入了deep supervision，学习不同尺度的特征<br>3）整合side output，即不同尺度的预测结果。<br>2、网络结构<br>&emsp;&emsp;HED的网络结构如下图所示，在VGG的基础上，首先去掉了最后的全连接层，减少计算和存储；其次，考虑到stride=32时，生成的预测图太模糊，边缘已经不明显，所以去掉了最后一个pooling层；最后，以pooling为界，对卷积操作分组，在每一组的最后一个卷积层之后，经过1x1卷积和反卷积操作，生成与原图相同大小的feature map，然后经过sigmoid激活函数，得到每一组最终的预测mask（文章中的side output）。最后，将五组预测mask以concat的方式组合，经过1x1卷积和sigmoid，得到融合的预测mask（fused mask）。<br><img src="/images/salient/hed_vgg.png" alt="" title="HED网络结构"><br>&emsp;&emsp;在预测时，最终的mask是五个side output和fused mask的平均值。<br><img src="/images/salient/final_predict.png" alt="" title="预测时最终mask的计算方法"><br>3、损失函数<br>&emsp;&emsp;HED的损失函数分别两个部分：Deep supervision和Weighted-fusion supervision。Deep supervision是对每个side output的监督，定义为：<br><img src="/images/salient/deep_supervision.png" alt="" title="Deep supervision"><br>其中，<em>lside</em>是第m个side output的loss，定义为交叉熵，其中<em>beta</em>是为了平衡正负样本，因为在边缘检测的ground truth中，大部分像素都是非边缘，只有极少部分是边缘，所以正负样本不均衡，如果用一般的交叉熵，loss会有偏重，这里为了减缓这种现象，加入了beta，beta定义为非边缘像素点的个数占总像素点个数的比例。alpha是第m个side output的loss在总的Lside中占的比例，论文中设置为1，每个side output对总的loss的贡献是一样的。<br>&emsp;&emsp;第二部分是weighted-fusion supervision，定义为fused mask对应的损失函数，计算方法如下：<br><img src="/images/salient/weighted_loss.png" alt="" title="Weighted-fusion supervision"><br>其中，h是在得到fused mask时，每个side output所占比例，是由网络自己去学习的，<em>Lfuse</em>定义为fused mask与ground truth的距离，实际上也是交叉熵。最终的损失函数是deep supervision与weighted-fusion supervision相加。<br>4、实验<br>&emsp;&emsp;在实验部分，作者对比了FCN-2s,8s以及有无deep supervision的结果，并可视化了有无deep supervision的结果：<br><img src="/images/salient/exper_table.png" alt="" title="方法的对比"><br><img src="/images/salient/exper_vis.png" alt="" title="可视化结果"><br>结果显示，有deep supervision时，网络的side output趋向于自然直观，得到的预测图是由粗到细，由局部到整体的结构；否则，网络学到的是无序的，且偏重于学习大结构的边缘。</p>
+<p>三、DSS<br>&emsp;&emsp;文中提到，HED不太适合来做显著性目标检测，下图第一行显示了HED做显著性目标检测的结果。一方面，显著性目标检测是比边缘检测更难的任务，显著性目标检测需要提取的是显著性区域，而不仅仅是边缘；另一方面，浅层提取的特征比较杂乱，深层的side-output提取的显著性图缺少规律性。<br>&emsp;&emsp;为了解决上述问题，作者首先提出了增强型HED结构：首先，由于深层能比较好地定位最显著的区域，所以在HED的基础上，在VGG的最后一个层也加入side output，输出预测的显著性图；其次，在每个side output的1*1卷积之前，接入两组卷积，不同side output的卷积核大小不同，如下图所示。上采样使用的方法同样是双线性插值（相较于反卷积效果更好一点），损失函数也是带权重的交叉熵损失函数，不同的是，ground truth中的像素点对应的权重为显著性区域的像素所占比例，这里主要考虑显著性目标检测不同于边缘检测，正负样本比例并不是很悬殊。</p>
+<p><img src="/images/salient/enhanced_HED.png" alt="" title="side output中1*1卷积之前的两组卷积"></p>
+<p><img src="/images/salient/HED_DSS.png" alt="" title="增强型HED与DSS在显著性目标检测中的效果对比"></p>
+<p>&emsp;&emsp;实验结果证明，增强型的HED结构提高了3%。但在实验中发现，深层的side output能找到显著性区域的位置，但缺少细节信息；浅层的side output更注重低级特征的提取，但缺少全局信息，所以可以使用short connection的结构将高层与底层的输出结合，得到最终的预测图。short connection的方法有三种，虽然公式17-19看起来很复杂，但是仔细分析，不难看出，几种方案均是将高层分辨率低的feature map经上采样后，合并到低层的feature map中。<br>&emsp;&emsp;第一种方案：f(6)=f(6); f(5)=f(5)+f(6); f(4)=f(4)+f(5)+f(6); f(3)=f(3)+f(4)+f(5)+f(6); f(2)=f(2)+f(3)+f(4)+f(5)+f(6); f(1)=f(1)+f(2)+f(3)+f(4)+f(5)+f(6)<br>&emsp;&emsp;第二种方案：f(6)=f(6); f(5)=f(5); f(4)=f(4)+f(5)+f(6); f(3)=f(3)+f(4)+f(5); f(2)=f(2)+f(3)f(4); f(1)=f(1)+f(2)+f(3)<br>&emsp;&emsp;第三种方案：f(6)=f(6); f(5)=f(5); f(4)=f(4)+f(5)+f(6); f(3)=f(3)+f(5)+f(6); f(2)=f(2)+f(3)+f(4)+f(5)+f(6); f(1)=f(1)+f(3)f(4)+f(5)+f(6)<br><img src="/images/salient/f-measure.png" alt="" title="所有方案的效果对比"><br>&emsp;&emsp;基于以上实验对比，最终选取第三种方案作为baseline，测试每个side output的1*1卷积之前的两组卷积在设置不同卷积核情况下的实验效果：<br><img src="/images/salient/conv_side_output.png" alt="" title="side output中的两组卷积的设置"></p>
+<p>&emsp;&emsp;测试时，将第2-4层的预测图对位相加后经sigmoid得到一个融合的预测图，将融合的预测图和第2-4层的预测图一起取mean之后作为最终的预测图。</p>
+<p>&emsp;&emsp;最后，DSS仍存在的一些问题：复杂背景，前景背景低对比度和透明的物体这三种情况下的显著性目标检测效果还有待提升。<br><img src="/images/salient/problem.png" alt="" title="一些尚待解决的案例"></p>
+<p>&emsp;&emsp;附<a href="https://mmcheng.net/dss/" target="_blank" rel="noopener">南开大学媒体计算实验室主页</a>，里面有发表的论文和部分源码。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CNN/" rel="tag"># CNN</a>
+          
+            <a href="/tags/显著性/" rel="tag"># 显著性</a>
+          
+            <a href="/tags/多级输出/" rel="tag"># 多级输出</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/STN/" rel="prev" title="Spatial Transformer Networks">
+                Spatial Transformer Networks <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">mna12478</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mna12478</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

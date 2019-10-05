@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CNN,动作识别,3DCNN,辅助特征," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;本篇论文是从ICML2010的基础上扩展的，提出了能从原始输入同时提取时间和空间特征的3DCNN，还提出了辅助特征的结构。&amp;emsp;&amp;emsp;先说动作识别，动作识别可以应用在视频监控，顾客属性和购物行为分析，而之前的方法大部分采用两步走的策略：基于原始输入提取手工特征、基于特征学习分类器，而且对使用的环境做了假设（小的尺度变化和小的视觉变化），这样就存在一个问题，在实际">
+<meta name="keywords" content="CNN,动作识别,3DCNN,辅助特征">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013)">
+<meta property="og:url" content="https://mna12478.github.io/action_2/index.html">
+<meta property="og:site_name" content="个人笔记">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;本篇论文是从ICML2010的基础上扩展的，提出了能从原始输入同时提取时间和空间特征的3DCNN，还提出了辅助特征的结构。&amp;emsp;&amp;emsp;先说动作识别，动作识别可以应用在视频监控，顾客属性和购物行为分析，而之前的方法大部分采用两步走的策略：基于原始输入提取手工特征、基于特征学习分类器，而且对使用的环境做了假设（小的尺度变化和小的视觉变化），这样就存在一个问题，在实际">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/conv.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/3DCNN.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/hardwire.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/auxiliary.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/TRECVID1.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/sample_human.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/crop.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/performance1.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/performance2.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/performance3.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/performance4.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/performance5.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/performance6.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/vis1.png">
+<meta property="og:image" content="https://mna12478.github.io/images/3D/performance7.png">
+<meta property="og:updated_time" content="2019-10-05T15:40:27.669Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;本篇论文是从ICML2010的基础上扩展的，提出了能从原始输入同时提取时间和空间特征的3DCNN，还提出了辅助特征的结构。&amp;emsp;&amp;emsp;先说动作识别，动作识别可以应用在视频监控，顾客属性和购物行为分析，而之前的方法大部分采用两步走的策略：基于原始输入提取手工特征、基于特征学习分类器，而且对使用的环境做了假设（小的尺度变化和小的视觉变化），这样就存在一个问题，在实际">
+<meta name="twitter:image" content="https://mna12478.github.io/images/3D/conv.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://mna12478.github.io/action_2/"/>
+
+
+
+
+
+  <title>动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013) | 个人笔记</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">个人笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/action_2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mna12478">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="个人笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-26T21:43:16+08:00">
+                2019-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;本篇论文是从ICML2010的基础上扩展的，提出了能从原始输入同时提取时间和空间特征的3DCNN，还提出了辅助特征的结构。<br>&emsp;&emsp;先说动作识别，动作识别可以应用在视频监控，顾客属性和购物行为分析，而之前的方法大部分采用两步走的策略：基于原始输入提取手工特征、基于特征学习分类器，而且对使用的环境做了假设（小的尺度变化和小的视觉变化），这样就存在一个问题，在实际的环境中，我们很难确定哪种特征对于识别动作是起关键作用的，因为特征的选择是取决于要解决的问题，尤其对于人的动作识别，不同的动作类别在外观和运动模式中会有很大的不同。<br>&emsp;&emsp;随着CNN在2D图像中表现的逐步提升，也想将CNN用于动作识别，而基于静态图片识别动作的方法并没有考虑到连续帧之间蕴藏的运动信息，所以本文提出了3DCNN结构，在输入的相同区域进行不同的卷积操作，能提取不同的特征。基于3D卷积操作，可以扩充成不同的3DCNN结构来分析视频数据。3DCNN结构能从连续帧中生成多通道信息，并且能在每个通道进行卷积核下采样操作，通过组合所有通道的信息得到最终的特征表示。</p>
+<h1 id="一、3DCNN网络结构"><a href="#一、3DCNN网络结构" class="headerlink" title="一、3DCNN网络结构"></a>一、3DCNN网络结构</h1><h2 id="1、3D卷积"><a href="#1、3D卷积" class="headerlink" title="1、3D卷积"></a>1、3D卷积</h2><p>&emsp;&emsp;2D卷积是在空间维度上的卷积，那么3D卷积既是在空间上的卷积，也是在时间上的卷积。2D卷积的卷积核是二维的，3D卷积的卷积核是三维的，是个卷积块。2D和3D的区别如下图所示：<br><img src="/images/3D/conv.png" alt="" title="2D卷积和3D卷积的对比"><br>&emsp;&emsp;与2D卷积类似，一个卷积块只能从视频帧组成的块中提取一种特征。</p>
+<h2 id="2、3DCNN结构"><a href="#2、3DCNN结构" class="headerlink" title="2、3DCNN结构"></a>2、3DCNN结构</h2><p>&emsp;&emsp;基于以上提出的3D卷积结构，可以衍生出很多3D卷积的网络，这里提出一个用于动作识别的3D卷积网络，如下图所示：<br><img src="/images/3D/3DCNN.png" alt="" title="用于动作识别的3DCNN网络结构"><br>&emsp;&emsp;在此结构中，输入为7个大小为60*40的视频帧，首先通过hardwire kernel，生成33个feature map，即每帧提取5个通道的信息：灰度、x方向的梯度、y方向的梯度、x方向的光流、y方向的光流（7+7+7+6+6）,生成的feature map大小为60*40*33。hardwire层是使用了我们对特征的先验知识，比随机初始化性能好。可参考<a href="https://blog.csdn.net/zouxy09/article/details/9002508" target="_blank" rel="noopener">如下图</a>：<br><img src="/images/3D/hardwire.png" alt=""><br>&emsp;&emsp;然后使用一个7*7*3的卷积核，分别在五个通道上进行卷积。为了增加feature map的数量，使用两组不同的卷积，得到两组不同的feature map (C2层)，每组博涵23个feature map（5+5+5+4+4），大小为54*34*(23*2)，在后来的降采样层S3，使用2*2的区域，得到的feature map大小为27*17*(23*2)。<br>&emsp;&emsp;C4层通过应用7*6*3的卷积核，在不同组的5个通道上单独进行卷积，这里使用3个卷积核，在C4层得到6个不同的区域，每个包含13个feature map (3+3+3+2+2),feature map大小为21*12*(13*6)，下一层S5应用3*3的降采样，在这个阶段，时间维度的尺寸已经很小了，所以只在<strong><em>空间维度</em></strong>进行卷积，feature map大小为7*4*（13*6）。<br>&emsp;&emsp;C6层使用7*4的卷积核，输出的feature map大小为1*1*128,128个feature map与前面层所有的78个feature map相连。<br>&emsp;&emsp;经过所有的卷积和下采样层之后，原始输入的7个连续帧变成了一个包含运动信息的128维的特征向量，最终的输出层神经元个数就是动作的类别数量，激活函数使用线性激活函数。<br>&emsp;&emsp;由于随着输入窗口（卷积的时间维度）的增加，可训练参数的数量也增加，3DCNN网络的输入局限于很小数量的连续视频帧；另一方面，人的许多动作扩展在许多帧中，所以，需要将高级的运动信息编码在3DCNN模型中，为了达到这个目的，本文提出从大量的视频帧中计算运动特征并使用这些运动特征作为辅助输出来正则化3DCNN模型。对于每个训练的动作，除了通过CNN获取的输入视频帧组成的块的信息外，还生成一个编码长时动作信息的特征向量，然后使CNN学习一个接近于这个特征向量的特征（将辅助输出单元与CNN最后的隐层相连。在实验中，我们使用从密集SIFT描述子构建的词袋特征，在原始的灰度图像中计算得到，并以运动边缘历史图片（MEHI）作为辅助特征。加入辅助特征之后的网络结构如下图所示：<br><img src="/images/3D/auxiliary.png" alt="" title="加入辅助特征之后的3DCNN网络结构"><br>&emsp;&emsp;基于以上3D卷积结构，可以延伸出很多3DCNN结构，本文提出的网络结构是在TRECVID数据库上表现最好的，但是不一定适用于其他数据库。一种可用的方法是构造很多网络，以所有网络的输出来做最终的预测。</p>
+<h2 id="3、实验"><a href="#3、实验" class="headerlink" title="3、实验"></a>3、实验</h2><p>&emsp;&emsp;数据库：TRECVID2018和KTH。</p>
+<h3 id="1）TRECVID2018"><a href="#1）TRECVID2018" class="headerlink" title="1）TRECVID2018"></a>1）TRECVID2018</h3><p>&emsp;&emsp;TRECVID2018数据库是在伦敦的Gatwick机场拍摄，使用5个不同的相机，以720*576的分辨率、25FPS的帧率拍摄共49小时的视频，由于4号相机的场景中发生的事件很少，所以排除了该相机。当前实验主要识别三种动作：CellToEar, ObjectPut, and Pointing，每种动作的分类方式是one-against-rest模式，即是该动作和不是该动作，负样本是除了这三种动作之外的动作，数据库共拍摄了5天：20071101, 20071106, 20071107, 20071108和20071112，每种动作使用的数量如下：<br><img src="/images/3D/TRECVID1.png" alt="" title="TRECVID12018每种动作的数量"><br>&emsp;&emsp;视频是在真实场景下拍摄的，所以一个场景包含多个人，使用行人检测器和检测驱动的跟踪器来定位人头，跟踪结果如下：<br><img src="/images/3D/sample_human.png" alt="" title="跟踪器的结果"><br>&emsp;&emsp;基于检测和跟踪的结果，可以给每个人计算一个发生动作的边界框，将边界框从跟踪结果中切割出来的结果如下图所示：<br><img src="/images/3D/crop.png" alt="" title="从跟踪结果中切割发生动作的边界框"><br>&emsp;&emsp;3DCNN网络需要的连续多帧就是通过在当前帧前后几帧的相同位置提取边界框来得到的，这样就能使一个立方块包含动作。在我们的实验中，立方块的时间维度设置为7，因为通过调研发现5-7帧的连续帧的表现已经足够与获取整个视频序列的表现相当，帧提取的step=2，也就是说，若当前帧是第0帧，纳闷我们在第-6、-4、-2、0、2、4、6帧中的相同位置提取边界框，每帧边界框中的图像块像素缩放成60*40。<br>&emsp;&emsp;用于对比的方案：2DCNN、基于局部特征的空间金字塔匹配（SPM），使用与3DCNN的输入相似的立方块，首先计算局部不变性特征，然后为每一类学习one-against-all线性SVM。对于密集特征，我们从原始的灰度图像（外观特征）或运动边缘历史图像（形状和运动特征）中提取SIFT描述子，SIFT特征是从7*7和16*16的局部图像块中的每6个像素来计算，<br>&emsp;&emsp;首先使用效果最好的3DCNN模型，标记为<sup>s</sup><sub>332</sub>，其中s是指5个通道分开卷积；332是指前两个卷积是3D卷积，最后卷积使用2D卷积，此外，也测试了加了正则化之后的网络的效果。<br>&emsp;&emsp;使用五折交叉验证的方法，单独的一天作为一折，评估方法包括精度，召回率和AUC。效果最好的是3DCNN组合结果（1+2+3+4）。<br><img src="/images/3D/performance1.png" alt=""><br><img src="/images/3D/performance2.png" alt="" title="7种方案对比结果"><br><img src="/images/3D/performance3.png" alt="" title="7种方案对比结果"><br><img src="/images/3D/performance4.png" alt="" title="4种3DCNN方案对比结果"><br><img src="/images/3D/performance5.png" alt="" title="4种3DCNN方案对比结果"><br><img src="/images/3D/performance6.png" alt="" title="3DCNN组合方案对比结果"><br><img src="/images/3D/vis1.png" alt="" title="3DCNN组合方案可视化结果"></p>
+<h3 id="2）KTH"><a href="#2）KTH" class="headerlink" title="2）KTH"></a>2）KTH</h3><p>&emsp;&emsp;KTH数据库包括25个主体6中动作，以9帧为为一组输入，为了减少内存消耗，将输入缩放成80*60，三个卷积层的卷积核使用9*7, 7*7和6*4，两个降采样层使用3*3的卷积核，实验中，随机选择16个主体用于训练数据，其他的9个主体用于测试<br><img src="/images/3D/performance7.png" alt="" title="不同方案对比结果"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CNN/" rel="tag"># CNN</a>
+          
+            <a href="/tags/动作识别/" rel="tag"># 动作识别</a>
+          
+            <a href="/tags/3DCNN/" rel="tag"># 3DCNN</a>
+          
+            <a href="/tags/辅助特征/" rel="tag"># 辅助特征</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/action_1/" rel="next" title="动作识别(Large-scale Video Classification with Convolutional Neural Networks, CVPR 2014)">
+                <i class="fa fa-chevron-left"></i> 动作识别(Large-scale Video Classification with Convolutional Neural Networks, CVPR 2014)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">mna12478</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、3DCNN网络结构"><span class="nav-number">1.</span> <span class="nav-text">一、3DCNN网络结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、3D卷积"><span class="nav-number">1.1.</span> <span class="nav-text">1、3D卷积</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、3DCNN结构"><span class="nav-number">1.2.</span> <span class="nav-text">2、3DCNN结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、实验"><span class="nav-number">1.3.</span> <span class="nav-text">3、实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1）TRECVID2018"><span class="nav-number">1.3.1.</span> <span class="nav-text">1）TRECVID2018</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2）KTH"><span class="nav-number">1.3.2.</span> <span class="nav-text">2）KTH</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mna12478</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

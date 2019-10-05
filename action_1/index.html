@@ -82,7 +82,7 @@
 <meta name="description" content="&amp;emsp;&amp;emsp;动作识别，即判断视频中人的动作的类别，其难点包括类内和类间差距（同一个动作，不同的人的表现可能有极大的不同）、运动特征提取（很难确定动作的起始点）、缺少标注良好的大数据集等。以往的方法多是基于人工提取的特征，提取感兴趣区域的局部特征，并将不同的特征组合起来，得到一个固定长度的特征向量，最后对特征向量进行分类。在CNN能以较低的错误率为图像分类后，学者们也开始尝试将CNN用于">
 <meta name="keywords" content="CNN,动作识别,Sports1M">
 <meta property="og:type" content="article">
-<meta property="og:title" content="动作识别Large-scale Video Classification with Convolutional Neural Networks">
+<meta property="og:title" content="动作识别(Large-scale Video Classification with Convolutional Neural Networks, CVPR 2014)">
 <meta property="og:url" content="https://mna12478.github.io/action_1/index.html">
 <meta property="og:site_name" content="个人笔记">
 <meta property="og:description" content="&amp;emsp;&amp;emsp;动作识别，即判断视频中人的动作的类别，其难点包括类内和类间差距（同一个动作，不同的人的表现可能有极大的不同）、运动特征提取（很难确定动作的起始点）、缺少标注良好的大数据集等。以往的方法多是基于人工提取的特征，提取感兴趣区域的局部特征，并将不同的特征组合起来，得到一个固定长度的特征向量，最后对特征向量进行分类。在CNN能以较低的错误率为图像分类后，学者们也开始尝试将CNN用于">
@@ -93,9 +93,9 @@
 <meta property="og:image" content="https://mna12478.github.io/images/Large/filter.png">
 <meta property="og:image" content="https://mna12478.github.io/images/Large/transfer.png">
 <meta property="og:image" content="https://mna12478.github.io/images/Large/group.png">
-<meta property="og:updated_time" content="2019-09-26T07:37:26.606Z">
+<meta property="og:updated_time" content="2019-09-26T09:11:50.245Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="动作识别Large-scale Video Classification with Convolutional Neural Networks">
+<meta name="twitter:title" content="动作识别(Large-scale Video Classification with Convolutional Neural Networks, CVPR 2014)">
 <meta name="twitter:description" content="&amp;emsp;&amp;emsp;动作识别，即判断视频中人的动作的类别，其难点包括类内和类间差距（同一个动作，不同的人的表现可能有极大的不同）、运动特征提取（很难确定动作的起始点）、缺少标注良好的大数据集等。以往的方法多是基于人工提取的特征，提取感兴趣区域的局部特征，并将不同的特征组合起来，得到一个固定长度的特征向量，最后对特征向量进行分类。在CNN能以较低的错误率为图像分类后，学者们也开始尝试将CNN用于">
 <meta name="twitter:image" content="https://mna12478.github.io/images/Large/fuse.png">
 
@@ -133,7 +133,7 @@
 
 
 
-  <title>动作识别Large-scale Video Classification with Convolutional Neural Networks | 个人笔记</title>
+  <title>动作识别(Large-scale Video Classification with Convolutional Neural Networks, CVPR 2014) | 个人笔记</title>
   
 
 
@@ -267,7 +267,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">动作识别Large-scale Video Classification with Convolutional Neural Networks</h1>
+          <h1 class="post-title" itemprop="name headline">动作识别(Large-scale Video Classification with Convolutional Neural Networks, CVPR 2014)</h1>
         
 
         <div class="post-meta">
@@ -348,7 +348,7 @@
 <h2 id="3、迁移学习"><a href="#3、迁移学习" class="headerlink" title="3、迁移学习"></a>3、迁移学习</h2><p>&emsp;&emsp;迁移至UCF-101上的结果：检验在Sports-1M上学到的特征是否是一般的特征。</p>
 <h3 id="1）UCF-101数据库"><a href="#1）UCF-101数据库" class="headerlink" title="1）UCF-101数据库"></a>1）UCF-101数据库</h3><p>&emsp;&emsp;UCF-101包括13320个视频，101类，5个大组：人机交互（化眼妆、刷牙等）、身体运动（婴儿爬行、俯卧撑、吹蜡烛）、人人交互（头部按摩、理发）、运动</p>
 <h3 id="2）迁移学习"><a href="#2）迁移学习" class="headerlink" title="2）迁移学习"></a>2）迁移学习</h3><h4 id="a、迁移学习方案"><a href="#a、迁移学习方案" class="headerlink" title="a、迁移学习方案"></a>a、迁移学习方案</h4><p>&emsp;&emsp;迁移学习：由于我们希望CNN能在网络底部学到更一般的特征（如边缘、局部形状），在顶端学到更复杂、数据集特有的特征，所以迁移学习的方案有：<br>&emsp;&emsp;a、fine-tune顶层：将CNN看做固定特征提取器，在最后的4096维层训练一个分类器，加上dropout，发现以10%的机会保持每个单元的积极性是有效的<br>&emsp;&emsp;b、fine-tune顶层的3层：除了重新训练最后的分类层外，考虑也重新训练两个FC层，在所有已训练层之前用dropout，以10%的机会保持单元积极性<br>&emsp;&emsp;c、fine-tune所有层：重新训练所有网络的参数，包括底部的卷积层<br>&emsp;&emsp;d、train fromscratch<br><img src="/images/Large/transfer.png" alt="" title="不同迁移学习方案的结果"><br>&emsp;&emsp;结果：从每个video中采样50个clip，遵循与Sports相同的评估方案，但不保证Sports数据库与UCF-101没有重叠，但是我们只用每个video中的一些采样clip。使用slow fusion，从结果中看出，重新训练softmax（方案a）不是最好的，可能因为high-level的特征太集中于sports，而且fine-tune所有层也是不足够的（可能因为过拟合）</p>
-<h4 id="b、不同group的表现"><a href="#b、不同group的表现" class="headerlink" title="b、不同group的表现"></a>b、不同group的表现</h4><p>&emsp;&emsp;将数据库分成5个组，计算每一类的平均精度，然后计算每个组的不同类的平均精度。从结果看，大部分良好的表现来源于UCF-101中的sports类别<br><img src="/images/Large/group.png" alt="" title="不同group的结果"></p>
+<h4 id="b、不同group的表现"><a href="#b、不同group的表现" class="headerlink" title="b、不同group的表现"></a>b、不同group的表现</h4><p>&emsp;&emsp;将数据库分成5个组，计算每一类的平均精度，然后计算每个组的不同类的平均精度。从结果看，大部分良好的表现来源于UCF-101中的sports类别<br><img src="/images/Large/group.png" alt="" title="不同group的结果"><br>2015年团队提出了<a href="http://vlg.cs.dartmouth.edu/c3d/" target="_blank" rel="noopener">C3D模型</a>：Learning Spatiotemporal Features with 3D Convolutional Networks。</p>
 
       
     </div>
@@ -392,6 +392,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/action_2/" rel="prev" title="动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013)">
+                动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013) <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -468,7 +472,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -490,7 +494,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,5 +1,5 @@
 ---
-title: 动作识别Large-scale Video Classification with Convolutional Neural Networks
+title: 动作识别(Large-scale Video Classification with Convolutional Neural Networks, CVPR 2014)
 date: 2019-09-25 16:27:58
 categories: 深度学习
 tags:
@@ -45,3 +45,4 @@ tags:
 #### b、不同group的表现
 &emsp;&emsp;将数据库分成5个组，计算每一类的平均精度，然后计算每个组的不同类的平均精度。从结果看，大部分良好的表现来源于UCF-101中的sports类别
 ![](/images/Large/group.png "不同group的结果")
+2015年团队提出了[C3D模型](http://vlg.cs.dartmouth.edu/c3d/)：Learning Spatiotemporal Features with 3D Convolutional Networks。

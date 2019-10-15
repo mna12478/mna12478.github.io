@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="动作识别,双流网络,光流,多任务学习," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;相对于单张图片的分类，视频相当于提供了一个自然的数据扩增方案。&amp;emsp;&amp;emsp;本文的目的是扩展现有的用于单张图片分类的卷积网络的能力，用于视频数据中的动作识别，为了达到这个目标，探索了一种不同的方法，用两个独立的识别stream（空间，时间），并将两个stream在最后合并得到最终的结果。空间stream用于从静止的视频帧中识别动作，时间stream用于从以密集光流">
+<meta name="keywords" content="动作识别,双流网络,光流,多任务学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动作识别(Two-Stream Convolutional Networks for Action Recognition in Videos, NIPS 2014)">
+<meta property="og:url" content="https://mna12478.github.io/action_3/index.html">
+<meta property="og:site_name" content="个人笔记">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;相对于单张图片的分类，视频相当于提供了一个自然的数据扩增方案。&amp;emsp;&amp;emsp;本文的目的是扩展现有的用于单张图片分类的卷积网络的能力，用于视频数据中的动作识别，为了达到这个目标，探索了一种不同的方法，用两个独立的识别stream（空间，时间），并将两个stream在最后合并得到最终的结果。空间stream用于从静止的视频帧中识别动作，时间stream用于从以密集光流">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mna12478.github.io/images/two/two-stream.png">
+<meta property="og:image" content="https://mna12478.github.io/images/two/convnet_input.png">
+<meta property="og:image" content="https://mna12478.github.io/images/two/evaluation.png">
+<meta property="og:image" content="https://mna12478.github.io/images/two/multi-task.png">
+<meta property="og:image" content="https://mna12478.github.io/images/two/two-stream-eval.png">
+<meta property="og:image" content="https://mna12478.github.io/images/two/all.png">
+<meta property="og:updated_time" content="2019-10-15T06:46:01.309Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="动作识别(Two-Stream Convolutional Networks for Action Recognition in Videos, NIPS 2014)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;相对于单张图片的分类，视频相当于提供了一个自然的数据扩增方案。&amp;emsp;&amp;emsp;本文的目的是扩展现有的用于单张图片分类的卷积网络的能力，用于视频数据中的动作识别，为了达到这个目标，探索了一种不同的方法，用两个独立的识别stream（空间，时间），并将两个stream在最后合并得到最终的结果。空间stream用于从静止的视频帧中识别动作，时间stream用于从以密集光流">
+<meta name="twitter:image" content="https://mna12478.github.io/images/two/two-stream.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://mna12478.github.io/action_3/"/>
+
+
+
+
+
+  <title>动作识别(Two-Stream Convolutional Networks for Action Recognition in Videos, NIPS 2014) | 个人笔记</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">个人笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/action_3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mna12478">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="个人笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">动作识别(Two-Stream Convolutional Networks for Action Recognition in Videos, NIPS 2014)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-08T21:01:29+08:00">
+                2019-10-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;相对于单张图片的分类，视频相当于提供了一个自然的数据扩增方案。<br>&emsp;&emsp;本文的目的是扩展现有的用于单张图片分类的卷积网络的能力，用于视频数据中的动作识别，为了达到这个目标，探索了一种不同的方法，用两个独立的识别stream（空间，时间），并将两个stream在最后合并得到最终的结果。空间stream用于从静止的视频帧中识别动作，时间stream用于从以密集光流为展现形式的运动特征中识别动作，两个stream都是卷积网络。两个网络独立设计也能充分利用在ImageNet上预训练的网络的能力。two-stream的设计是根据人类视觉皮层包含两条路径：腹侧流（进行物体识别）和背侧流（识别运动），这里我们不再继续讨论这种关联的设计。</p>
+<h1 id="一、双流网络"><a href="#一、双流网络" class="headerlink" title="一、双流网络"></a>一、双流网络</h1><p>&emsp;&emsp;视频可以分成另个组成部分：时间+空间，空间部分，以单独的视频帧的形式存在，包含了场景和物体信息；时间部分，以帧之间的运动的形式存在，包含了观测者（相机）和目标的运动。双流网络的结构如下图所示，每个stream都是由卷积网络组成，将两个stream各自计算softmax分数后进行最终的融合。融合的方法包括两种：以堆叠的L2归一化softmax分数为特征进行平均化和训练一个多分类的线性SVM。<br><img src="/images/two/two-stream.png" alt="" title="2D卷积和3D卷积的对比"></p>
+<h2 id="1、空间stream网络"><a href="#1、空间stream网络" class="headerlink" title="1、空间stream网络"></a>1、空间stream网络</h2><p>&emsp;&emsp;有些动作是与特定的个体有强相关性的，从实验中也发现仅仅是单独的空间识别stream的效果已经是很不错的了。因为空间卷积网络在一个图片分类结构中是很必要的，而且可以在大的数据库中（如ImageNet）上进行预训练。</p>
+<h2 id="2、光流卷积网络"><a href="#2、光流卷积网络" class="headerlink" title="2、光流卷积网络"></a>2、光流卷积网络</h2><h3 id="光流的叠"><a href="#光流的叠" class="headerlink" title="光流的叠"></a>光流的叠</h3><p>&emsp;&emsp;密集光流可以看成是一些列是相邻帧的位移矢量场的集合，水平和竖直方向的矢量场可以看成是图像的通道维度，那么L个连续帧可以组成2L个输入的图像通道。对于任意一帧中的任意一个点定义为(u, v)，d<sub>t</sub>表示点(u. v)从第t帧到第t+1帧的位移变化。卷积网络的输入定义为：</p>
+<p><center>I<sub>t</sub>(u, v, 2k-1) = d<sup>x</sup><sub>t+k-1</sub>(u, v)</center></p>
+<p><center>I<sub>t</sub>(u, v, 2k) = d<sup>y</sup><sub>t+k-1</sub>(u, v), u=[1;w], v=[1;h], k=[1;L]&emsp; (1)</center></p>
+<h3 id="轨迹堆叠"><a href="#轨迹堆叠" class="headerlink" title="轨迹堆叠"></a>轨迹堆叠</h3><p>&emsp;&emsp;另一种运动特征的表示，是基于轨迹的描述子，在视频帧中，在与光流法相同的位置，沿着运动轨迹采样，在这种方法中的输入定义为：</p>
+<p><center>I<sub>t</sub>(u, v, 2k-1) = d<sup>x</sup><sub>t+k-1</sub>(p<sub>k</sub>)</center></p>
+<p><center>I<sub>t</sub>(u, v, 2k) = d<sup>y</sup><sub>t+k-1</sub>(p<sub>k</sub>), u=[1;w], v=[1;h], k=[1;L]&emsp;(2)</center><br>&emsp;&emsp;其中，p<sub>k</sub>是沿轨迹采样的第k个点，在第t帧中开始于位置(u, v)，并有以下递推关系：</p>
+<p><center>p<sub>1</sub>=(u, v); p<sub>k</sub>=p<sub>k-1</sub> + d<sub>t+k-2</sub>(p<sub>k-1</sub>), k&gt;1</center><br>&emsp;&emsp;在光流法的公式中，通道I<sub>r</sub>(u, v, c)存储了位置(u, v)的位移向量，也就是说，光流堆叠采样了在视频帧中同一个位置的位移向量d；而基于轨迹的表示方法存储了在位置点p<sub>k</sub>，沿着轨迹采样的向量（如下图右侧所示）<br><img src="/images/two/convnet_input.png" alt="" title="光流堆叠与轨迹堆叠"></p>
+<h3 id="双向光流"><a href="#双向光流" class="headerlink" title="双向光流"></a>双向光流</h3><p>&emsp;&emsp;前面的光流法处理的是前向光流，也就是第t帧的位移场d<sub>t</sub>指定其像素在下一帧的位置，那么很自然的想到扩展成双向光流，即通过计算另一组相反方向的位移场来获得，之后可以通过堆叠第t帧和第t+L/2帧之间的L/2个前向流，和第t-L/2帧和第t帧之间的L/2个后向流，构建一个输入I<sub>t</sub>，因此输入I<sub>t</sub>就有和之前一样的通道数2L，这种方法可以用公式（1）和（2）中任意一个来表示。</p>
+<h3 id="减去平均流量法"><a href="#减去平均流量法" class="headerlink" title="减去平均流量法"></a>减去平均流量法</h3><p>&emsp;&emsp;通常对网络的输入使用zero-centering是有好处的，因为这是的模型更好地使用rectification非线性，在我们的例子中，位移矢量场元素既可以是正，也可以是负，并且很自然地集中在一点上：在各种各样的运动中，一个方向运动出现的可能性与相反方向运动的可能性是一样的，但是给定相邻两个视频帧，他们之间的光流可以由特定的位移来控制，即由相机的运动造成。相机运动补偿的重要性在之前已经强调过，首先估计一个全局运动分量，然后从密集光流中减去即可。在我们的论文中，我们考虑一个更简单的方法：从每个位移场d中减去平均向量。<br>&emsp;&emsp;以上我们描述了几种在一个输入I<sub>t</sub>中组合不同光流位移场的方法，考虑到卷积网络需要一个固定尺寸的输入，我们从输入中采样一个224*224*2L大小的子输入作为输入，隐层的设置尽可能保持与空间网络一致。</p>
+<h2 id="3、多任务学习"><a href="#3、多任务学习" class="headerlink" title="3、多任务学习"></a>3、多任务学习</h2><p>&emsp;&emsp;空间stream网络可以在大的图片数据库，如ImageNet上进行预训练；时间stream需要在视频数据上训练，而可用的视频动作分类的数据库又很小，在我们的实验中，在UCF-101和HMDB-51数据库上训练，他们只有9.5K和3.7K个视频，为了减少过拟合，一颗可以思考力的方法是将两个数据库组合成一个，但是由于各个类别之间的交集使得这并不容易实现。一个选择是只添加没有出现在原始数据库中的类别的图片，但是这个需要人工搜索这种类别并且限制了额外的训练数据的数量。<br>&emsp;&emsp;一个更合理的组合多个数据库的方法是基于多任务学习。其目标是学习一个视频表示，这不仅适用于所讨论的任务（例如HMDB-51分类），还适用于其他任务（例如UCF-101分类）。其他的任务扮演了正则化的角色，并且允许使用额外的训练数据。在我们的实验中，修改了卷积网络使它在最后的全连接层有<strong>两个softmax分类器</strong>：一个用于计算HMDB-51的分类分数；另一个用于计算UCF-101.每一层都有它自己的损失函数，整个训练过程中的loss由单个任务loss的加和组成，网络的权重导数可以通过反向传播计算得到。</p>
+<h2 id="4、实现细节"><a href="#4、实现细节" class="headerlink" title="4、实现细节"></a>4、实现细节</h2><h3 id="卷积网络的设置"><a href="#卷积网络的设置" class="headerlink" title="卷积网络的设置"></a>卷积网络的设置</h3><p>&emsp;&emsp;空间和时间卷积网络的隐层均使用ReLU激活函数，max-pooling层的作用区域是3*3，stride=2，空间网络与时间网络唯一的不同是，我们从时间网络中移除了第二个正则化层来减少内存消耗。</p>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><p>&emsp;&emsp;优化器：mini-batch SGD，momentum=0.9，batch_size=256，每次迭代，从每个类别均匀采样256个训练视频，从每个视频中随机选择一帧。在空间网络的训练中，从选择的帧中crop出一个224*224的子图片区域，通过随机的水平flip和RGB jittering，视频会事先进行缩放，使得最小的边的长度为256，而子图片区域是从整个帧中采样得到的，而不仅仅是256*256的中心。在时间网络中，我们先为选择的训练视频帧计算一个光流输入I，再随机crop出一个224*224*2L的区域，并进行flip。lr=1e-2，并根据固定的时间减少，也就是说，若从头开始训练，经过5万轮迭代后lr变成1e-3，经过7万轮迭代后，lr=1e-4，经过8万轮迭代后训练停止；若是fine-tune，经过14k轮后lr=1e-3，经过2万轮后停止训练。</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>&emsp;&emsp;在测试阶段，给定一段视频，我们先采样固定数量的帧（实验中是25），帧之间的时间步长保持一致，从每个视频帧中，通过clip四个角和中心，得到10个输入，整个视频的类别分数通过计算采样帧和变换后的帧的识别结果的平均值来得到。</p>
+<h3 id="在ImageNet-ILSVRC-2012上进行预训练"><a href="#在ImageNet-ILSVRC-2012上进行预训练" class="headerlink" title="在ImageNet ILSVRC-2012上进行预训练"></a>在ImageNet ILSVRC-2012上进行预训练</h3><p>&emsp;&emsp;当预训练空间网络时，我们使用与上述一样的扩增方法（flip，crop，RGB jittering）来扩增训练和测试数据，在数据库上的top-5错误率有16.0%降到了13.5%，我们相信，主要的原因是从整个图片进行采样，而不仅仅是图片中心。</p>
+<h3 id="多GPU训练"><a href="#多GPU训练" class="headerlink" title="多GPU训练"></a>多GPU训练</h3><p>&emsp;&emsp;网络结构的实现是通过公开的Caffe toolbox，但是有一些比较重要的改变，包括装在单系统上的多GPU训练。我们使用数据并行策略，并将每个batch分成几份，在几个GPU上进行计算，训练一个单个的时间网络需要在用于4个NVIDIA Titan的单系统上训练一天，与单个GPU相比，速度节省了3.2倍。</p>
+<h3 id="光流"><a href="#光流" class="headerlink" title="光流"></a>光流</h3><p>&emsp;&emsp;光流的计算是通过使用现成的OpenCV toolbox中的GPU应用来实现的，尽管计算速度很快（一对视频帧需要0.06s），但如果要实时计算，仍然存在瓶颈，所以在训练之前先计算光流。为了避免将位移场存储为float，水平和竖直两个分量都被缩放到了[0, 255]，并且使用JPEG压缩（解压缩后，光流重新缩放至原始范围），这使得UCF-101的光流大小由1.5TB减小到了27GB。</p>
+<h2 id="5、实验评估"><a href="#5、实验评估" class="headerlink" title="5、实验评估"></a>5、实验评估</h2><h3 id="数据库和评估标准"><a href="#数据库和评估标准" class="headerlink" title="数据库和评估标准"></a>数据库和评估标准</h3><p>&emsp;&emsp;本文用到的两个数据库：UCF-101和HMDB-51。UCF-101包括13K个视频（平均每个视频180帧），标注成101类动作，训练数据包括9.5K个视频，；HMDB-51有6.8K个视频，包括51个动作，训练数据包括3.7K个视频。</p>
+<h3 id="空间卷积网络"><a href="#空间卷积网络" class="headerlink" title="空间卷积网络"></a>空间卷积网络</h3><p>&emsp;&emsp;首先评估空间stream网络的表现，考虑三个场景：从头训练UCF-101；在ILSVRC-2012上预训练，在UCF-101上fine-tune；固定预训练网络，只训练最后的分类层。dropout正则化比例为0.5或者0.9，结果如下所示。从结果中可以看出，仅在UCF-101上训练网络会导致过拟合（即使dropout的比例很大），而fine-tune整个网络只有微小的提升，而最后dropout比例高会导致过度正则化网络，导致错误的分类结果。在之后的实验中，我们使用只训练最后一层的策略。<br><img src="/images/two/evaluation.png" alt="" title="空间网络和时间网络的识别结果"></p>
+<h3 id="时间卷积网络"><a href="#时间卷积网络" class="headerlink" title="时间卷积网络"></a>时间卷积网络</h3><p>&emsp;&emsp;评估时间卷积网络的策略：使用多个堆叠的光流（L={5, 10}）；堆叠轨迹；减去平均流量；使用双向光流。结构是从头训练UCF-101，dropout的比例为0.9，从结果上看，我们可以知道，堆叠多个（L&gt;1）位移场是有好处的，因为给网络提供了长时的运动信息，比一对视频帧（L=1）中包含的流信息更有判别性。输入的流的数量从5增加到10，只得到了比较小的提升，所以在之后的实验中，我们保持L=10不变。其次，我们发现减去平均值是有效果的，因为降低了帧之间全局运动的影响，在之后的实验中作为默认操作使用。不同堆叠技术的区别是比较小的，而光流堆叠的方法比轨迹堆叠的方法好；使用双向光流的方法只略微优于使用单向的前向光流；时间网络的表现优于空间网络，证明运动信息在动作识别中的重要性。<br>&emsp;&emsp;除此之外，还使用了slow fusion策略，当从头训练UCF-101时，精度为56.4%，优于单帧结构52.3%，但依旧低于基于光流特征的网络，这说明尽管多帧信息很重要，但以合适的方式将其输入到卷积网络中也很重要。</p>
+<h3 id="时间卷积网络的多任务学习"><a href="#时间卷积网络的多任务学习" class="headerlink" title="时间卷积网络的多任务学习"></a>时间卷积网络的多任务学习</h3><p>&emsp;&emsp;在UCF-101上训练时间卷积网络是很有挑战性的，因为训练集比较小；而更大的挑战是在HMDB-51上训练，训练集更小，在实验中使用不同的方法来提升其训练的有效性：在UCF-101上预训练，在HDMB-51上fine-tune；通过人工选择，从UCF-101上增加78类，这些类别与原始的HMDB-51中的类别没有交叉；使用多任务来学习一个视频表示，在UCF-101和HMDB-51之间共享。结果如下所示，<br><img src="/images/two/multi-task.png" alt="" title="多任务学习的识别结果"></p>
+<h3 id="双流卷积网络"><a href="#双流卷积网络" class="headerlink" title="双流卷积网络"></a>双流卷积网络</h3><p>&emsp;&emsp;将空间网络和时间网络组合起来，实验结果如下图所示，可以看出，时间网络和空间网络是互补的；基于SVM的softmax分数融合优于平均法；使用双向光流的表现不是很好；使用多任务学习来训练的时间卷积网络，在单独使用和与空间网络合并这两种情况中都是最好的。<br><img src="/images/two/two-stream-eval.png" alt="" title="双流网络的识别结果"></p>
+<h3 id="与其他方法的比较"><a href="#与其他方法的比较" class="headerlink" title="与其他方法的比较"></a>与其他方法的比较</h3><p>&emsp;&emsp;空间网络，在ILSVRC上预训练，在UCF或者HMDB上训练最后一层；时间网络，使用多任务学习训练UCF和HMDB；输入使用非双向光流堆叠，减去平均值；两个网络的softmax分数通过平均法或者SVM和平。通过结果可以看到，单独的空间网络和时间网络都远远优于深度网络结构，两个网络的的组合更是提升了结果。<br><img src="/images/two/all.png" alt="" title="与其他方法的对比"><br>&emsp;&emsp;<br>&emsp;&emsp;</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/动作识别/" rel="tag"># 动作识别</a>
+          
+            <a href="/tags/双流网络/" rel="tag"># 双流网络</a>
+          
+            <a href="/tags/光流/" rel="tag"># 光流</a>
+          
+            <a href="/tags/多任务学习/" rel="tag"># 多任务学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/action_2/" rel="next" title="动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013)">
+                <i class="fa fa-chevron-left"></i> 动作识别(3D Convolutional Neural Networks for Human Action Recognition, PAMI 2013)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">mna12478</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、双流网络"><span class="nav-number">1.</span> <span class="nav-text">一、双流网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、空间stream网络"><span class="nav-number">1.1.</span> <span class="nav-text">1、空间stream网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、光流卷积网络"><span class="nav-number">1.2.</span> <span class="nav-text">2、光流卷积网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#光流的叠"><span class="nav-number">1.2.1.</span> <span class="nav-text">光流的叠</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#轨迹堆叠"><span class="nav-number">1.2.2.</span> <span class="nav-text">轨迹堆叠</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#双向光流"><span class="nav-number">1.2.3.</span> <span class="nav-text">双向光流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减去平均流量法"><span class="nav-number">1.2.4.</span> <span class="nav-text">减去平均流量法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、多任务学习"><span class="nav-number">1.3.</span> <span class="nav-text">3、多任务学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、实现细节"><span class="nav-number">1.4.</span> <span class="nav-text">4、实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积网络的设置"><span class="nav-number">1.4.1.</span> <span class="nav-text">卷积网络的设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练"><span class="nav-number">1.4.2.</span> <span class="nav-text">训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">1.4.3.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在ImageNet-ILSVRC-2012上进行预训练"><span class="nav-number">1.4.4.</span> <span class="nav-text">在ImageNet ILSVRC-2012上进行预训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多GPU训练"><span class="nav-number">1.4.5.</span> <span class="nav-text">多GPU训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#光流"><span class="nav-number">1.4.6.</span> <span class="nav-text">光流</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、实验评估"><span class="nav-number">1.5.</span> <span class="nav-text">5、实验评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库和评估标准"><span class="nav-number">1.5.1.</span> <span class="nav-text">数据库和评估标准</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空间卷积网络"><span class="nav-number">1.5.2.</span> <span class="nav-text">空间卷积网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间卷积网络"><span class="nav-number">1.5.3.</span> <span class="nav-text">时间卷积网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间卷积网络的多任务学习"><span class="nav-number">1.5.4.</span> <span class="nav-text">时间卷积网络的多任务学习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#双流卷积网络"><span class="nav-number">1.5.5.</span> <span class="nav-text">双流卷积网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与其他方法的比较"><span class="nav-number">1.5.6.</span> <span class="nav-text">与其他方法的比较</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mna12478</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="动作识别,C3D," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;这篇文章的贡献点有三个：使用3D卷积网络来提取时空特征；使用3*3*3的小卷积核组成网络结构，识别效果最好；提出的C3D网络在动作识别中取得了state-of-the-art的效果，计算简单，容易训练和使用。另外，这篇论文公开了代码&amp;emsp;&amp;emsp;一个有效的视频描述子应具备以下属性：首先描述子应该是通用的，这样才能表示不同类型的视频，同时具有区分性；其次，描述子应该">
+<meta name="keywords" content="动作识别,C3D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learning Spatiotemporal Features with 3D Convolutional Networks (ICCV 2015)">
+<meta property="og:url" content="https://mna12478.github.io/action_4/index.html">
+<meta property="og:site_name" content="个人笔记">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;这篇文章的贡献点有三个：使用3D卷积网络来提取时空特征；使用3*3*3的小卷积核组成网络结构，识别效果最好；提出的C3D网络在动作识别中取得了state-of-the-art的效果，计算简单，容易训练和使用。另外，这篇论文公开了代码&amp;emsp;&amp;emsp;一个有效的视频描述子应具备以下属性：首先描述子应该是通用的，这样才能表示不同类型的视频，同时具有区分性；其次，描述子应该">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/compare.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/convolution.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/3D-convolution.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/C3D.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/Sports-1M.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/vis.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/res.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/low.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/embed.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/sim.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/scene.png">
+<meta property="og:image" content="https://mna12478.github.io/images/C3D/runtime.png">
+<meta property="og:updated_time" content="2019-10-17T14:51:00.149Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Learning Spatiotemporal Features with 3D Convolutional Networks (ICCV 2015)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;这篇文章的贡献点有三个：使用3D卷积网络来提取时空特征；使用3*3*3的小卷积核组成网络结构，识别效果最好；提出的C3D网络在动作识别中取得了state-of-the-art的效果，计算简单，容易训练和使用。另外，这篇论文公开了代码&amp;emsp;&amp;emsp;一个有效的视频描述子应具备以下属性：首先描述子应该是通用的，这样才能表示不同类型的视频，同时具有区分性；其次，描述子应该">
+<meta name="twitter:image" content="https://mna12478.github.io/images/C3D/compare.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://mna12478.github.io/action_4/"/>
+
+
+
+
+
+  <title>Learning Spatiotemporal Features with 3D Convolutional Networks (ICCV 2015) | 个人笔记</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">个人笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/action_4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="mna12478">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="个人笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Learning Spatiotemporal Features with 3D Convolutional Networks (ICCV 2015)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-15T20:00:29+08:00">
+                2019-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;这篇文章的贡献点有三个：使用3D卷积网络来提取时空特征；使用3*3*3的小卷积核组成网络结构，识别效果最好；提出的C3D网络在动作识别中取得了state-of-the-art的效果，计算简单，容易训练和使用。另外，这篇论文公开了<a href="http://vlg.cs.dartmouth.edu/c3d" target="_blank" rel="noopener">代码</a><br>&emsp;&emsp;一个有效的视频描述子应具备以下属性：首先描述子应该是通用的，这样才能表示不同类型的视频，同时具有区分性；其次，描述子应该紧凑，因为我们处理的是上百万的视频资源，一个紧凑的描述子能帮助处理、检索伸缩性更强的任务；此外，计算方法应该是高效的；最后，应该能很方便地应用，与使用复杂的特征编码方法和分类器不同，一个好的描述子应该在很简单的模型（如线性分类器）中的效果都能很好。<br>&emsp;&emsp;尽管以前已经有学者应用3D卷积网络，但是，并没有一篇论文在大规模监督学习训练数据库和深度网络结构组合后，在不同类型的视频分析人物中取得最好的效果。从3D卷积网络得到的特征封装了视频中关于物体、场景和动作的信息，这使得在应对不同的任务时，不需要进行模型的fine-tune。C3D拥有一个好的描述子该有的属性。<br><img src="/images/C3D/compare.png" alt="" title="C3D与发表的最好的方法的比较"><br>&emsp;&emsp;之前的3D卷积方法是先检测人，再使用跟踪的方法将人分割出来，而这片论文的方法是将整个视频帧作为输入，不需要任何预处理，容易扩展到大的数据库。</p>
+<h1 id="3D卷积网络"><a href="#3D卷积网络" class="headerlink" title="3D卷积网络"></a>3D卷积网络</h1><h2 id="3D卷积和池化"><a href="#3D卷积和池化" class="headerlink" title="3D卷积和池化"></a>3D卷积和池化</h2><p>&emsp;&emsp;在一张图片上应用2D卷积，得到的结果是一个图片；在许多图片上应用2D卷积，得到的还是一张图片，因此，2D卷积丢失了输入信号的时序信息。在之前的Large-scale Video Classification with Convolutional Neural Networks论文中，只有Slow Fusion模型使用了3D卷积，我们相信这也是为何这个方法能完胜其他网络的关键原因，但它在第三个卷积层之后仍旧缺少所有的时序信息。<br><img src="/images/C3D/convolution.png" alt="" title="2D卷积核3D卷积对比"><br>&emsp;&emsp;为了简便，之后的视频片段表示为c*l*h*w，其中，c是通道数，l是视频帧的数量，h和w分别是高和宽。3D卷积核表示为d*k*k，d是卷积核时间长度，k是空间尺寸。<br>&emsp;&emsp;由于在大规模数据库上进行训练是非常耗时的，所以先在一个中等规模的数据库UCF-101上训练，找到最好的模型结构，输入全部缩放成128*171，这个尺寸差不多是UCF-101中视频尺寸的一半，视频分成没有重叠的16帧的片段clip，作为网络的输入，所以输入的维度是3*16*128*171，同时，也是用jittering的方法，通过使用随机的crop，在训练阶段crop出3*16*112*112的区域。网络包括5个卷积层和5个池化层（每个卷积之后都有一个池化），2个全连接层和一个softmax层，5个卷积层的滤波器个数分别是64,128,256,256,256，所有的卷积层都使用合适的padding（时间空间都有），stride=1，所以从输入到输出，尺寸都没有变化。第一个池化层的尺寸是1*2*2，为了不过早合并时间信号，也为了满足clip的长度为16，这样我们就可以在时间维度以factor=2，在时间信号消失前，将pool操作进行4次，两个全连接层的神经元个数是2048，训练时从头开始训练，mini-batch=30个clip，lr=0.003，每4个epoch缩小为原来的1/10，经过16个epoch后停止训练。</p>
+<h2 id="探索时间深度"><a href="#探索时间深度" class="headerlink" title="探索时间深度"></a>探索时间深度</h2><p>&emsp;&emsp;在这篇论文中，我们感兴趣的是如何通过深度网络集成时间信息，为了探索一个好的3D卷积结构，我们只改变卷积核的时间长度d，其他保持不变，试验两种结构：均匀的时间深度：所有的卷积层有相同的卷积核时间深度；改变时间深度：不同层的卷积核时间深度不同。对于第一种，试验4种网络，卷积核的时间深度分别是1,3,5,7，并将这种网络命名为depth-d，其中depth-1就相当于在分离的帧中使用2D卷积；对于第二种，我们试验2种网络：时间深度增加3-3-5-5-7，和时间深度减少7-5-5-3-3。所有网络在最后的pooling层有相同尺寸的输出，所以对于全连接层有相同数量的参数，参数的数量只在卷积层不同（因为卷积核时间深度不同），相比于全连接层上百万的参数，这些参数的不同的影响微乎其微。实验结果如下图所示：<br><img src="/images/C3D/3D-convolution.png" alt="" title="3D卷积核时间深度的研究"><br>&emsp;&emsp;从结果中我们可以看出，3*3*3是效果最好的卷积核，这个发现与2D卷积网络中的发现是类似的；此外，3D卷积网络普遍比2D卷积网络的效果好。</p>
+<h2 id="时空特征学习"><a href="#时空特征学习" class="headerlink" title="时空特征学习"></a>时空特征学习</h2><h3 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h3><p>&emsp;&emsp;对于大规模数据库，可以训练一个基于3*3*3卷积核的深度3D卷积网络，由8个卷积层，5个pooling层，2个全连接层和一个softmax输出层组成，网络结构如下图所示：<br><img src="/images/C3D/C3D.png" alt="" title="C3D网络结构"><br>&emsp;&emsp;所有的卷积核都是3*3*3，stride=1*1*1，所有的3D pooling层都是2*2*2，stride=2*2*2，除了pool1的kernel_size=1*2*2，stride=1*2*2，全连接层有4096个神经元。</p>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>&emsp;&emsp;为了学习时空特征，我们在现在最大的视频分类数据库——Sports-1M上训练，这个数据库包括110万个体育视频，每个视频属于487类中的一种，与UCF-101相比，这个数据库有5倍的动作种类和100倍的视频资源。</p>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><p>&emsp;&emsp;由于Sports-1M有很多长视频，所以从每个训练视频中随机提取5个片段，每个片段时长为2s，并缩放为128*171，在训练时，将输入clip随机crop成16*112*112，同时以50%的几率水平flip。优化器为SGD，batch_size=30，初始学习率为0.003，每15w次迭代将学习率除以2，经过190w次迭代（约13个epoch）后停止训练。除了从头开始训练外，也试验了从I380K预训练并fine-tune的方案。</p>
+<h3 id="Sports-1M的分类结果"><a href="#Sports-1M的分类结果" class="headerlink" title="Sports-1M的分类结果"></a>Sports-1M的分类结果</h3><p><img src="/images/C3D/Sports-1M.png" alt="" title="Sports-1M分类结果"><br>&emsp;&emsp;对于每个clip，只使用了简单的中心crop方法，就将其输入到网络中进行预测。对于视频的预测，我们对10个随机提取的视频clip的预测结果进行平均，值得关注的是，不同的对比方案有不同的设置。</p>
+<h3 id="C3D视频描述子"><a href="#C3D视频描述子" class="headerlink" title="C3D视频描述子"></a>C3D视频描述子</h3><p>&emsp;&emsp;训练之后，C3D可以当做其他视频分析人物的特征提取器。将视频分成包含16帧的clip，每两个梁旭的clip之间有8帧的重合，将clip输入到C3D网络中提取fc6的激活值，这些clip的fc6激活值的平均值组成一个4096维的视频描述子，紧接着是一个L2正则化。</p>
+<h3 id="C3D学到了什么？"><a href="#C3D学到了什么？" class="headerlink" title="C3D学到了什么？"></a>C3D学到了什么？</h3><p>&emsp;&emsp;使用反卷积，可以看到在前面几帧中，C3D注重学习外观，并在后面的视频帧中跟踪显著的运动。下图可视化了两个C3D中conv5b的特征图，最高的激活值映射回图像空间。在第一个例子中，特征集中于整个人，之后在其他帧中跟踪体操的运动。同样在第二个例子中，特征首先集中于眼睛，然后跟踪化妆过程中眼睛周围的运动。所以C3D不同于一般的2D卷积，它能选择性地关注运动和外观。<br><img src="/images/C3D/vis.png" alt="" title="C3D模型可视化结果"></p>
+<h1 id="动作识别"><a href="#动作识别" class="headerlink" title="动作识别"></a>动作识别</h1><h2 id="数据库-1"><a href="#数据库-1" class="headerlink" title="数据库"></a>数据库</h2><p>&emsp;&emsp;本文使用的数据库是UCF-101，包括13320个视频和101类动作。</p>
+<h2 id="分类模型"><a href="#分类模型" class="headerlink" title="分类模型"></a>分类模型</h2><p>&emsp;&emsp;提取C3D特征并输入到多分类的线性SVM中训练模型，使用三种不同的策略：在I380K上训练C3D；在Sports-1M上训练C3D；在I380K上预训练，在Sports-1M上fine-tune。在这三种策略中，最后一个策略的效果最好。<br><img src="/images/C3D/res.png" alt="" title="UCF-101识别结果对比"><br>&emsp;&emsp;为了评估C3D特征的紧凑型，使用PCA将特征映射到低维空间并使用线性SVM分类器，记录分类精度，<br><img src="/images/C3D/low.png" alt="" title="低维空间的识别结果对比"><br>&emsp;&emsp;为了评估C3D特征的判别性，从UCF-101上随机选择10w个clip，提取来自ImageNet和C3D的fc6特征，然后使用t-SNE映射到二维空间，可以看到c3D的分类效果是优于ImageNet的。<br><img src="/images/C3D/embed.png" alt="" title="特征映射结果对比"></p>
+<h1 id="动作相似度标记"><a href="#动作相似度标记" class="headerlink" title="动作相似度标记"></a>动作相似度标记</h1><h2 id="数据库-2"><a href="#数据库-2" class="headerlink" title="数据库"></a>数据库</h2><p>&emsp;&emsp;ASLAN数据库，包括3631个视频，432个动作类别，任务是预测给定的一对视频中的动作是否一样，使用10-折交叉验证，这个数据库的任务不同于动作识别，因为这个注重于预测动作的相似度而不是实际的动作标签，任务比较艰巨因为测试集包含训练集中没有的动作（never-seen-before）。</p>
+<h2 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h2><p>&emsp;&emsp;将视频分成包含16帧的clip，clip之间有8帧的重合，然后为每个clip提取C3D特征：prob, fc7, fc6, pool5。视频的特征是通过计算clip特征的平均值得到的，每种类型的特征分开计算 ，并加上L2正则化。</p>
+<h2 id="分类模型-1"><a href="#分类模型-1" class="headerlink" title="分类模型"></a>分类模型</h2><p>&emsp;&emsp;给定一对视频，计算一下L2距离；对于4种类型的特征，为每个视频对计算48维（12*4=48）特征向量，并分别对每个维度进行零均值，单位方差的归一化操作，最后训练一个线性SVM来判断视频对是否相同。</p>
+<h2 id="结果对比"><a href="#结果对比" class="headerlink" title="结果对比"></a>结果对比</h2><p><img src="/images/C3D/sim.png" alt="" title="动作相似度标记结果对比"><br>&emsp;&emsp;C3D与其他state-of-the-art方法的对比如图所示，大部分现在的方法是使用多个手动提取的特征和强编码方法（VLAD，Fisher向量）和复杂的学习模型。</p>
+<h1 id="场景和目标识别"><a href="#场景和目标识别" class="headerlink" title="场景和目标识别"></a>场景和目标识别</h1><h2 id="数据库-3"><a href="#数据库-3" class="headerlink" title="数据库"></a>数据库</h2><p>&emsp;&emsp;评估C3D在动态场景识别中的效果使用的数据库：YUPENN和Maryland。YUPENN包括420个视频和13个场景类别，对于物体识别，在egocentric数据库上测试C3D，这个数据库包括42种日常的物体，视频是以第一视角来拍的，与训练集中任意一个视频相比，它们的外观和运动特征都大不相同。</p>
+<h2 id="分类模型-2"><a href="#分类模型-2" class="headerlink" title="分类模型"></a>分类模型</h2><p>&emsp;&emsp;对于这两个数据库，我们使用相同的特征提取方法和线性SVM用于分类，使用与这些数据库提出者相同的留出法。对于物体识别数据库，标准的评估是基于视频帧的，但是C3D是以16帧为长度来提取特征，我们选择以16帧为一个窗口，在所有视频上进行划窗来提取C3D特征，选择每个clip的真实标签作为最经常出现的clip的标签，如果一个clip中最经常出现的标签小于8帧，那么就看成是负样本，没有物体，并且在训练和测试中忽略。<br><img src="/images/C3D/scene.png" alt="" title="场景识别结果对比"></p>
+<h2 id="Runtime比较"><a href="#Runtime比较" class="headerlink" title="Runtime比较"></a>Runtime比较</h2><p>&emsp;&emsp;一同对比的方法有：iDT和双流网络中的时间stream，虽然双流网络没有给出源码，但是这个方法使用了Brox的光流作为输入，所以用两种方法评估光流的runtime：作者提供的CPU版本和OpenCV中的GPU版本，对比的内容是为UCF-101提取特征（包括输入输出），使用一个单CPU或者K40 Tesla。iDT只有CPU版本，没有GPU版本。<br><img src="/images/C3D/runtime.png" alt="" title="Runtime对比"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/动作识别/" rel="tag"># 动作识别</a>
+          
+            <a href="/tags/C3D/" rel="tag"># C3D</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/action_3/" rel="next" title="动作识别(Two-Stream Convolutional Networks for Action Recognition in Videos, NIPS 2014)">
+                <i class="fa fa-chevron-left"></i> 动作识别(Two-Stream Convolutional Networks for Action Recognition in Videos, NIPS 2014)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">mna12478</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#3D卷积网络"><span class="nav-number">1.</span> <span class="nav-text">3D卷积网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3D卷积和池化"><span class="nav-number">1.1.</span> <span class="nav-text">3D卷积和池化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#探索时间深度"><span class="nav-number">1.2.</span> <span class="nav-text">探索时间深度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时空特征学习"><span class="nav-number">1.3.</span> <span class="nav-text">时空特征学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络结构"><span class="nav-number">1.3.1.</span> <span class="nav-text">网络结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库"><span class="nav-number">1.3.2.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练"><span class="nav-number">1.3.3.</span> <span class="nav-text">训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sports-1M的分类结果"><span class="nav-number">1.3.4.</span> <span class="nav-text">Sports-1M的分类结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C3D视频描述子"><span class="nav-number">1.3.5.</span> <span class="nav-text">C3D视频描述子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C3D学到了什么？"><span class="nav-number">1.3.6.</span> <span class="nav-text">C3D学到了什么？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动作识别"><span class="nav-number">2.</span> <span class="nav-text">动作识别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库-1"><span class="nav-number">2.1.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分类模型"><span class="nav-number">2.2.</span> <span class="nav-text">分类模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动作相似度标记"><span class="nav-number">3.</span> <span class="nav-text">动作相似度标记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库-2"><span class="nav-number">3.1.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特征"><span class="nav-number">3.2.</span> <span class="nav-text">特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分类模型-1"><span class="nav-number">3.3.</span> <span class="nav-text">分类模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果对比"><span class="nav-number">3.4.</span> <span class="nav-text">结果对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#场景和目标识别"><span class="nav-number">4.</span> <span class="nav-text">场景和目标识别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库-3"><span class="nav-number">4.1.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分类模型-2"><span class="nav-number">4.2.</span> <span class="nav-text">分类模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Runtime比较"><span class="nav-number">4.3.</span> <span class="nav-text">Runtime比较</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">mna12478</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

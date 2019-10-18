@@ -5,7 +5,7 @@ tags:
 - 动作识别
 - C3D
 ---
-&emsp;&emsp;这篇文章的贡献点有三个：使用3D卷积网络来提取时空特征；使用3\*3\*3的小卷积核组成网络结构，识别效果最好；提出的C3D网络在动作识别中取得了state-of-the-art的效果，计算简单，容易训练和使用。另外，这篇论文公开了[代码](http://vlg.cs.dartmouth.edu/c3d)
+&emsp;&emsp;这篇文章的贡献点有三个：使用3D卷积网络来提取时空特征；使用3\*3\*3的小卷积核组成网络结构，识别效果最好；提出的C3D网络在动作识别中取得了state-of-the-art的效果，计算简单，容易训练和使用。另外，这篇论文[主页](http://vlg.cs.dartmouth.edu/c3d)公开了caffe版本的[代码](https://github.com/facebookarchive/C3D)，caffe转TensorFlow版本的[代码](https://github.com/hx173149/C3D-tensorflow)，Keras版本[代码](https://github.com/axon-research/c3d-keras)（TensorFlow为后端），Pytorch版本[代码1](https://github.com/jfzhang95/pytorch-video-recognition)和[版本2](https://github.com/DavideA/c3d-pytorch)
 &emsp;&emsp;一个有效的视频描述子应具备以下属性：首先描述子应该是通用的，这样才能表示不同类型的视频，同时具有区分性；其次，描述子应该紧凑，因为我们处理的是上百万的视频资源，一个紧凑的描述子能帮助处理、检索伸缩性更强的任务；此外，计算方法应该是高效的；最后，应该能很方便地应用，与使用复杂的特征编码方法和分类器不同，一个好的描述子应该在很简单的模型（如线性分类器）中的效果都能很好。
 &emsp;&emsp;尽管以前已经有学者应用3D卷积网络，但是，并没有一篇论文在大规模监督学习训练数据库和深度网络结构组合后，在不同类型的视频分析人物中取得最好的效果。从3D卷积网络得到的特征封装了视频中关于物体、场景和动作的信息，这使得在应对不同的任务时，不需要进行模型的fine-tune。C3D拥有一个好的描述子该有的属性。
 ![](/images/C3D/compare.png "C3D与发表的最好的方法的比较")

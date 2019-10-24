@@ -7,13 +7,13 @@ tags:
 - 级联
 - 分类融合策略
 ---
-&emsp;&emsp;3D卷积网络虽然效果还不错，但是其参数量较多，而且训练的规模也没有现在这么大，所以网络参数不易优化，根据这个局限，本文提出将3D时间空间学习分解成2D卷积+1D时间学习，提出了一种空间时间分解卷积网络。（自从17年Google的DeepMind提出了kinetics-400,kinetics-600数据集以后，数据量不再是3D卷积网络的局限，人们设计了很多巧妙的3D卷积网络，很大地促进了3D卷积网络的发展。）
+&emsp;&emsp;3D卷积网络（这里指的是3D Convolutional Neural Networks for Human Action Recognition）虽然效果还不错，但是其参数量较多，而且训练数据的规模也没有现在这么大，所以网络参数不易优化，根据这个局限，本文提出将3D时间空间学习分解成2D卷积+1D时间学习，提出了一种空间时间分解卷积网络。（自从17年Google的DeepMind提出了kinetics-400,kinetics-600数据集以后，数据量不再是3D卷积网络的局限，人们设计了很多巧妙的3D卷积网络，很大地促进了3D卷积网络的发展。）
 # 网络结构
 &emsp;&emsp;一个3D的卷积核可以表示成K (shape=n<sub>x</sub>\*n<sub>y</sub>\*n<sub>t</sub>)，一个视频块V (shape=m<sub>x</sub>\*m<sub>y</sub>\*m<sub>t</sub>)，之前的3D卷积可以表示成F<sub>st</sub>=V\*K。拆分后的3D卷积核可以表示成：
 ![](/images/Factor/factorized.png "3D卷积分解公式")
 &emsp;&emsp;公式中的乘法为Kronecker product（克罗内克积），K<sub>x,y</sub>为2D空间卷积核，k<sub>t</sub>为1D时间卷积核，那么3D卷积等同于以下两步：
 ![](/images/Factor/sequential.png "")
-&emsp;&emsp;其中V(:,:,i<sub>t</sub>)表示V中的一帧，F<sub>s</sub> (shape=m<sub>x</sub>\*m<sub>y</sub>\*m<sub>t</sub>)是对视频帧进行2D卷积的结果，卷积核为K<sub>x,y</sub>，在卷积之前进行padding，F<sub>s</sub>(i<sub>x</sub>,i<sub>y</sub>,:)表示F<sub>s</sub>沿时间维度的向量，F<sub>st</sub> (shape=m<sub>x</sub>\*m<sub>y</sub>\*m<sub>t</sub>)是对F<sub>s</sub>(i<sub>x</sub>,i<sub>y</sub>,:)进行1D卷积的结果，卷积核为k<sub>t</sub>，卷积之前进行padding。以上公式可以[图示](https://blog.csdn.net/zzmshuai/article/details/84880257)为：
+&emsp;&emsp;其中V(:, :, i<sub>t</sub>)表示V中的一帧，F<sub>s</sub> (shape=m<sub>x</sub>\*m<sub>y</sub>\*m<sub>t</sub>)是对视频帧进行2D卷积的结果，卷积核为K<sub>x,y</sub>，在卷积之前进行padding，F<sub>s</sub>(i<sub>x</sub>, i<sub>y</sub>, :)表示F<sub>s</sub>沿时间维度的向量，F<sub>st</sub> (shape=m<sub>x</sub>\*m<sub>y</sub>\*m<sub>t</sub>)是对F<sub>s</sub>(i<sub>x</sub>,i<sub>y</sub>,:)进行1D卷积的结果，卷积核为k<sub>t</sub>，卷积之前进行padding。以上公式可以[图示](https://blog.csdn.net/zzmshuai/article/details/84880257)为：
 ![](/images/Factor/represent.png "3D卷积分解图示")
 &emsp;&emsp;从以上公式可以看出，可以通过学习一个2D空间卷积核和一个1D时间卷积核，并顺序使用学习的卷积核，来模拟3D卷积的过程，这样卷积核的复杂度从n<sub>x</sub>n<sub>y</sub>n<sub>t</sub>变成了n<sub>x</sub>n<sub>y</sub>+n<sub>t</sub>，而2D卷积核的学习可以利用现有的丰富的图片数据库。通常公式中3D卷积核的秩比一般的3D卷积核的秩低，我们通过分解方案来牺牲表达能力。但是，一般时空动作模式有低的秩，因为人动作的静态外观的特征表达在相邻的视频帧中有很大的相关性，如果他们不是低秩的，可以通过学习冗余的2D和1D卷积核并从中构造候选3D卷积核来弥补牺牲的表达能力。
 &emsp;&emsp;本文提出的F<sub>ST</sub>CN结构如下图所示，首先，SCL(spatial convolutional layers)网络包含2D卷积、ReLU、LRN和max-pooling，每个卷积层必定包括卷积和ReLU，但不一定包括LRN和max-pooling。
@@ -30,7 +30,7 @@ tags:
 &emsp;&emsp;为了高效学习时空卷积核，使用了辅助分类层，与低级的SCL相连，实际上，首先使用ImageNet预训练这个辅助网络，然后使用随机采样的视频帧来进行fine-tune，这里只fine-tune最后三层，最后整体训练F<sub>ST</sub>CN网络。
 &emsp;&emsp;测试时，给定一个测试动作序列，首先采样一对视频片段，然后将每个采样的视频对输入到F<sub>ST</sub>CN网络中，得到一个分类，然后将所有片段的分类结果融合得到最终的视频分类结果。
 # 基于SCI的分类结果融合策略
-&emsp;&emsp;假定动作识别数据库中有N种动作，我们从每个视频序列中采样M对{V<sub>clip</sub>, V<sub>clip</sub><sup>diff</sup>}，每对视频片段正常crop，生成C个crop的结果，对于一个测试视频序列，第i个采样片段对的第k个crop视频表示为p<sub>k,i</sub>，其中k的范围为[1,C]，i的范围为[1,M]，最终的分类可以用简单的平均法来得到，即
+&emsp;&emsp;假定动作识别数据库中有N种动作，我们从每个视频序列中采样M对{V<sub>clip</sub>, V<sub>clip</sub><sup>diff</sup>}，每对视频片段正常crop，生成C个crop的结果，对于一个测试视频序列，第i个采样片段对的第k个crop视频表示为p<sub>k,i</sub>，其中k的范围为[1, C]，i的范围为[1, M]，最终的分类可以用简单的平均法来得到，即
 ![](/images/Factor/average.png "")
 &emsp;&emsp;但这种方法不一样经常正确，实际上，如果一个人知道那个输出的分数更可靠，那么可以用带权重的平均法来得到一个更好的最终的分类。为了评估任意一个分数的可靠性，提出了一个很直观的想法：如果p可靠，那么它应该是稀疏的，分布的熵会比较小，也就是说，向量p中只有一些项是大的值，意味着测试视频序列属于相应动作类别的概率较高，而p中的其他项很小或接近0。当p不可靠时，它的每一项（类别概率）往往会均匀地分布在所有动作类别上。所以，我们可以用稀疏度来表示融合策略中的权重，从而提出了SCI (Sparsity Concentration Index)来评估每个p的稀疏度。
 ![](/images/Factor/sparisity.png "")
@@ -41,7 +41,7 @@ tags:
 &emsp;&emsp;整个融合策略可以用如下图表示。给定测试序列，首先采样视频片段对，没对视频片段按左上，中上，右上，左中，中间，右中，左下，中下，右下进行crop，组成9个part，并经过flip得到18个样本，输入到F<sub>ST</sub>CN中，经过SCI策略得到18个分类分数，所有输出的分数取最大来得到最终的分类。
 ![](/images/Factor/SCI.png "")
 # 实现细节
-&emsp;&emsp;前4个SCL，用于提取丰富和有判别性的外观特征，结构为Conv(96,7,2)-ReLU-Norm-Pooling(3,2)-Conv(256,5,2)-ReLU-Norm-Pooling(3,2)-Conv(512,3,1)-Conv(512,3,1)，其中卷积表示为Conv(c<sub>f</sub>,c<sub>k</sub>,c<sub>s</sub>)，卷积核数量为c<sub>f</sub>，卷积核尺寸为c<sub>k</sub>\*c<sub>k</sub>，stride=c<sub>s</sub>，Pooling层表示为(p<sub>k</sub>,p<sub>s</sub>)，与TCL相连的SCL包含卷积层（Conv(128,3,1)和Pooling(3,3)）。转置矩阵P的尺寸为128\*128，TCL有两个并列的卷积层（Conv(32,3,1)和Conv(32,5,1)），每个都有Dropout，比例为0.5，TCL没有接Pooling层因为会破坏时间线索，在TCL和SCL的顶端有两个全连接层，分别是4096和2048，batch_size=32，crop尺寸为204\*204，没有使用一般的224\*224，节省内存。
+&emsp;&emsp;前4个SCL，用于提取丰富和有判别性的外观特征，结构为Conv(96,7,2)-ReLU-Norm-Pooling(3,2)-Conv(256,5,2)-ReLU-Norm-Pooling(3,2)-Conv(512,3,1)-Conv(512,3,1)，其中卷积表示为Conv(c<sub>f</sub>, c<sub>k</sub>, c<sub>s</sub>)，卷积核数量为c<sub>f</sub>，卷积核尺寸为c<sub>k</sub>\*c<sub>k</sub>，stride=c<sub>s</sub>，Pooling层表示为(p<sub>k</sub>, p<sub>s</sub>)，与TCL相连的SCL包含卷积层（Conv(128,3,1)和Pooling(3,3)）。转置矩阵P的尺寸为128\*128，TCL有两个并列的卷积层（Conv(32,3,1)和Conv(32,5,1)），每个都有Dropout，比例为0.5，TCL没有接Pooling层因为会破坏时间线索，在TCL和SCL的顶端有两个全连接层，分别是4096和2048，batch_size=32，crop尺寸为204\*204，没有使用一般的224\*224，节省内存。
 # 实验
 &emsp;&emsp;在实验中，视频片段包含5个沿时间维度采样的视频片段对，d<sub>t</sub>=9，s<sub>t</sub>=5,TCL路径为结构图中橘色箭头所示，并在HMDB51上测试在TCL中使用两种卷积核是否会比只用一种效果好，两种卷积核的尺寸分别是3\*3和5\*5，实验结果如下表所示，可以看出，使用两种不同卷积核的效果比只用其中一种的效果好，使用大的卷积核效果比小的好，这里的结果都是未使用SCI融合策略的结果，
 ![](/images/Factor/TCL.png "测试TCL的效果")

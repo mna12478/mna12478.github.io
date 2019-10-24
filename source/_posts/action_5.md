@@ -27,7 +27,7 @@ tags:
 &emsp;&emsp;V<sup>diff</sup>既包括短时运动，也包含长时运动：V<sup>diff</sup>(shape=l<sub>x</sub>\*l<sub>y</sub>\*l<sub>t</sub>)包含短时运动信息，而V<sup>diff</sup>作为一个整体时包含整个视频的长时运动，跨度为(l<sub>t</sub>-1)s<sub>t</sub>。
 &emsp;&emsp;在实验中，采样了多个视频片段对{V<sub>clip</sub>, V<sub>clip</sub><sup>diff</sup>}，并将视频片段对作为F<sub>ST</sub>CN的输入。这种采样策略类似于数据增广，将数据增广扩展到了时间领域，考虑到V<sub>clip</sub><sup>diff</sup>包含了长时和短时的运动信息，而大部分的V<sub>clip</sub>包含外观信息，那么采样对的使用方法如下：首先，将V<sub>clip</sub>和V<sub>clip</sub><sup>diff</sup>中单独的视频帧输入到低级SCL中，然后将从V<sub>clip</sub><sup>diff</sup>中学到的特征经T-P算子后输入到TCL中，从V<sub>clip</sub>中随机采样一帧输入到与TCL并列的中级SCL中。
 # 训练与测试
-&emsp;&emsp;为了高效学习时空卷积核，使用了辅助分类层，与低级的SCL相连，实际上，首先使用ImageNet预训练这个辅助网络，然后使用随机采样的视频帧来进行fine-tune，这里只fine-tune最后三层，最后整体训练F<sub>ST</sub>CN网络。
+&emsp;&emsp;为了高效学习时空卷积核，使用了辅助分类层，与低级的SCL相连，实际上，首先使用ImageNet预训练这个辅助网络，然后使用随机采样的视频帧来进行fine-tune，这里只fine-tune最后三层，最后整体训练F<sub>ST</sub>CN网络。有人用Pytorch[复现了这个方法](https://github.com/MRzzm/action-recognition-models-pytorch/tree/master/3DCNN/FstCN)
 &emsp;&emsp;测试时，给定一个测试动作序列，首先采样一对视频片段，然后将每个采样的视频对输入到F<sub>ST</sub>CN网络中，得到一个分类，然后将所有片段的分类结果融合得到最终的视频分类结果。
 # 基于SCI的分类结果融合策略
 &emsp;&emsp;假定动作识别数据库中有N种动作，我们从每个视频序列中采样M对{V<sub>clip</sub>, V<sub>clip</sub><sup>diff</sup>}，每对视频片段正常crop，生成C个crop的结果，对于一个测试视频序列，第i个采样片段对的第k个crop视频表示为p<sub>k,i</sub>，其中k的范围为[1, C]，i的范围为[1, M]，最终的分类可以用简单的平均法来得到，即

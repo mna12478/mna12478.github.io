@@ -1,6 +1,7 @@
 ---
 title: Long-term Recurrent Convolutional Networks for Visual Recognition and Description (CVPR 2015)
 date: 2019-10-24 16:47:23
+categories: 动作识别
 tags:
 - 动作识别
 - 图片取标题

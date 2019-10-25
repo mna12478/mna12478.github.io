@@ -1,6 +1,7 @@
 ---
 title: Human Action Recognition using Factorized Spatio-Temporal Convolutional Networks (ICCV 2015)
 date: 2019-10-22 16:54:03
+categories: 动作识别
 tags:
 - 动作识别
 - 3D卷积分解

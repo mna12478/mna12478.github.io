@@ -1,6 +1,7 @@
 ---
 title: Learning Spatiotemporal Features with 3D Convolutional Networks (ICCV 2015)
 date: 2019-10-15 20:00:29
+categories: 动作识别
 tags:
 - 动作识别
 - C3D

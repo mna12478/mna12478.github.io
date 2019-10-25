@@ -42,6 +42,7 @@ tags:
 ![](/images/Factor/SCI.png "")
 # 实现细节
 &emsp;&emsp;前4个SCL，用于提取丰富和有判别性的外观特征，结构为Conv(96,7,2)-ReLU-Norm-Pooling(3,2)-Conv(256,5,2)-ReLU-Norm-Pooling(3,2)-Conv(512,3,1)-Conv(512,3,1)，其中卷积表示为Conv(c<sub>f</sub>, c<sub>k</sub>, c<sub>s</sub>)，卷积核数量为c<sub>f</sub>，卷积核尺寸为c<sub>k</sub>\*c<sub>k</sub>，stride=c<sub>s</sub>，Pooling层表示为(p<sub>k</sub>, p<sub>s</sub>)，与TCL相连的SCL包含卷积层（Conv(128,3,1)和Pooling(3,3)）。转置矩阵P的尺寸为128\*128，TCL有两个并列的卷积层（Conv(32,3,1)和Conv(32,5,1)），每个都有Dropout，比例为0.5，TCL没有接Pooling层因为会破坏时间线索，在TCL和SCL的顶端有两个全连接层，分别是4096和2048，batch_size=32，crop尺寸为204\*204，没有使用一般的224\*224，节省内存。
+&emsp;&emsp;在复现的代码中，首先将clip和clip_diff沿axis=2合并，然后输入到SCL1-SCL2中，两个网络都是由Conv3d、ReLU和MaxPool3d组成，然后输入到SCL3-SCL4，结构为Conv3d+ReLU，然后从得到的特征向量中分离出clip和clip_diff对应的元素。对于clip部分，去掉维数为1的维度，输入到Parallel_spatial中，由Conv2d和MaxPool2d组成，然后reshape成向量，输入到spa_fc中，包括Linear、Dropout和Linear；clip_diff输入到Parallel_temporal中，包括Conv3d、MaxPool3d和TCL，TCL由branch1、branc2和cat组成，branch包括Conv3d、ReLu和MaxPool3d，最后沿axis=1合并，然后输入到tem_fc中，包括Linear、Dropout和Linear，最后将clip和clip_diff沿axis=1合并，并经过fc和softmax。
 # 实验
 &emsp;&emsp;在实验中，视频片段包含5个沿时间维度采样的视频片段对，d<sub>t</sub>=9，s<sub>t</sub>=5,TCL路径为结构图中橘色箭头所示，并在HMDB51上测试在TCL中使用两种卷积核是否会比只用一种效果好，两种卷积核的尺寸分别是3\*3和5\*5，实验结果如下表所示，可以看出，使用两种不同卷积核的效果比只用其中一种的效果好，使用大的卷积核效果比小的好，这里的结果都是未使用SCI融合策略的结果，
 ![](/images/Factor/TCL.png "测试TCL的效果")

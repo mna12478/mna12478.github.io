@@ -36,8 +36,4 @@ cutting board) ，并使用基于词组的统计机器学习翻译（statistical
 &emsp;&emsp;b、CRF max+基于LSTM的decoder，语义表示能编码成一个单个的固定长度的向量，我们在每个时间步骤向LSTM提供完整的视觉输入表示，类似于在图片描述中将整个图片输入到LSTM中。
 &emsp;&emsp;c、CRF prob+基于LSTM的decoder，相比于基于词组的SMT，使用LSTM锦绣柠机器翻译的好处是，它可以自然地在训练和测试期间合并概率向量，这使LSTM可以学习视觉生成中的不确定性，而不必依赖MAP估计。结构与b相同，但是将最大预测变成概率分布。
 &emsp;&emsp;评估的数据库是TACoS中级数据库，对比的方法是使用CRF max的方法。
-&emsp;&emsp;
-&emsp;&emsp;
-&emsp;&emsp;
-&emsp;&emsp;
-&emsp;&emsp;
+

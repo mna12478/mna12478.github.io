@@ -20,6 +20,7 @@ tags:
 &emsp;&emsp;2、图片描述，固定长度的输入，序列型输出，x&emsp;->&emsp;<y<sub>1</sub>, y<sub>2</sub>, ..., y<sub>T</sub>>，输入为非随时间变化的图片，输出的标签空间更大，更丰富，由任意长度的句子组成。解决方案是在在所有的timestep都复制输入。
 &emsp;&emsp;3、视频表示，序列型输入和输出，<x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>T</sub>>&emsp;->&emsp;<y<sub>1</sub>, y<sub>2</sub>, ..., y<sub>T'</sub>>，输入和输出都是随时间变化，一般输入和输出的时间步不同。解决方案是基于encoder-decoder结构，第一个序列模型encoder用于将输入序列映射为固定长度的向量；第二个序列模型decoder用于将向量展开成任意长度的序列输出。
 ![](/images/LRCN/specific.png "三种问题的解决方案")
+&emsp;&emsp;复现的代码可[参考这里](https://github.com/MRzzm/action-recognition-models-pytorch/blob/master/CNN%2BLSTM/LRCNs/LRCNs.py)，
 # 行为识别
 &emsp;&emsp;一个clip包含16帧，尝试了LRCN的两个变种：LSTM放在CNN第一个全连接层的后面，即LRCN-fc<sub>6</sub>，另一个将LSTM放在CNN第二个全连接层后面，即LRCN-fc<sub>7</sub>，LRCN在每个timestep预测一个视频的分类，通过取平均得到最终的预测分类。测试时，以stride=8提取16帧的视频clip，并对所有clip取平均。
 &emsp;&emsp;另外，也考虑了RGB的输入和光流的输入，将光流计算出来并转换成光流图，将x和y分量围绕128居中并乘以标量，使得光流值落在0到255之间，光流图的第3个通道是通过计算光流幅值得到。CNN模型在ILSVRC-2012上进行预训练，在LSTM模型中，整个视频的分类是由所有视频帧分数取平均得到。

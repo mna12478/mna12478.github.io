@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="仿射变换,CNN,网络优化," />
+  <meta name="keywords" content="位姿," />
 
 
 
@@ -79,25 +79,24 @@
 
 
 
-<meta name="description" content="&amp;emsp;&amp;emsp;STN网络是谷歌提出来一个模型，可以看成CNN网络中的一个插件，从效果上看，STN网络能通过无监督的方式自动学习，找到图片中的ROI区域并进行一系列逆变换，将ROI区域的物体转换为正常形态，实现空间不变性。本文参考了此篇博客&amp;emsp;&amp;emsp;一个好的分类模型应该能将物体的姿态和形变与纹理和形状解耦，也就是说，即使纹理或形状发生改变，模型也能将其正确分类。CNN网络的m">
-<meta name="keywords" content="仿射变换,CNN,网络优化">
+<meta name="description" content="&amp;emsp;&amp;emsp;本文通过对人身体部位的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。&amp;emsp;&amp;emsp;为了构建P-CNN特征，我们">
+<meta name="keywords" content="位姿">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spatial Transformer Networks">
-<meta property="og:url" content="https://mna12478.github.io/STN/index.html">
+<meta property="og:title" content="P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015)">
+<meta property="og:url" content="https://mna12478.github.io/action_7/index.html">
 <meta property="og:site_name" content="个人笔记">
-<meta property="og:description" content="&amp;emsp;&amp;emsp;STN网络是谷歌提出来一个模型，可以看成CNN网络中的一个插件，从效果上看，STN网络能通过无监督的方式自动学习，找到图片中的ROI区域并进行一系列逆变换，将ROI区域的物体转换为正常形态，实现空间不变性。本文参考了此篇博客&amp;emsp;&amp;emsp;一个好的分类模型应该能将物体的姿态和形变与纹理和形状解耦，也就是说，即使纹理或形状发生改变，模型也能将其正确分类。CNN网络的m">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;本文通过对人身体部位的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。&amp;emsp;&amp;emsp;为了构建P-CNN特征，我们">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://mna12478.github.io/images/stn/linear.png">
-<meta property="og:image" content="https://mna12478.github.io/images/stn/sampling_grid.png">
-<meta property="og:image" content="https://mna12478.github.io/images/stn/stn_result.png">
-<meta property="og:image" content="https://mna12478.github.io/images/stn/home.png">
-<meta property="og:image" content="https://mna12478.github.io/images/stn/STN.png">
-<meta property="og:image" content="https://mna12478.github.io/images/stn/keypoint.png">
-<meta property="og:updated_time" content="2019-09-25T02:52:47.800Z">
+<meta property="og:image" content="https://mna12478.github.io/images/PCNN/architecture.png">
+<meta property="og:image" content="https://mna12478.github.io/images/PCNN/static.png">
+<meta property="og:image" content="https://mna12478.github.io/images/PCNN/minmax.png">
+<meta property="og:image" content="https://mna12478.github.io/images/PCNN/delta.png">
+<meta property="og:image" content="https://mna12478.github.io/images/PCNN/dynamic.png">
+<meta property="og:updated_time" content="2019-10-25T15:02:37.026Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spatial Transformer Networks">
-<meta name="twitter:description" content="&amp;emsp;&amp;emsp;STN网络是谷歌提出来一个模型，可以看成CNN网络中的一个插件，从效果上看，STN网络能通过无监督的方式自动学习，找到图片中的ROI区域并进行一系列逆变换，将ROI区域的物体转换为正常形态，实现空间不变性。本文参考了此篇博客&amp;emsp;&amp;emsp;一个好的分类模型应该能将物体的姿态和形变与纹理和形状解耦，也就是说，即使纹理或形状发生改变，模型也能将其正确分类。CNN网络的m">
-<meta name="twitter:image" content="https://mna12478.github.io/images/stn/linear.png">
+<meta name="twitter:title" content="P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;本文通过对人身体部位的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。&amp;emsp;&amp;emsp;为了构建P-CNN特征，我们">
+<meta name="twitter:image" content="https://mna12478.github.io/images/PCNN/architecture.png">
 
 
 
@@ -127,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="https://mna12478.github.io/STN/"/>
+  <link rel="canonical" href="https://mna12478.github.io/action_7/"/>
 
 
 
 
 
-  <title>Spatial Transformer Networks | 个人笔记</title>
+  <title>P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015) | 个人笔记</title>
   
 
 
@@ -250,7 +249,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/STN/">
+    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/action_7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="mna12478">
@@ -267,7 +266,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Spatial Transformer Networks</h1>
+          <h1 class="post-title" itemprop="name headline">P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015)</h1>
         
 
         <div class="post-meta">
@@ -279,8 +278,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-21T10:09:01+08:00">
-                2018-04-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-25T20:09:20+08:00">
+                2019-10-25
               </time>
             
 
@@ -302,8 +301,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
+                  <a href="/categories/动作识别/" itemprop="url" rel="index">
+                    <span itemprop="name">动作识别</span>
                   </a>
                 </span>
 
@@ -339,11 +338,7 @@
       
 
       
-        <p>&emsp;&emsp;STN网络是谷歌提出来一个模型，可以看成CNN网络中的一个插件，从<a href="http://torch.ch/blog/2015/09/07/spatial_transformers.html" target="_blank" rel="noopener">效果</a>上看，STN网络能通过无监督的方式自动学习，找到图片中的ROI区域并进行一系列逆变换，将ROI区域的物体转换为正常形态，实现空间不变性。本文参考了<a href="https://kevinzakka.github.io/2017/01/10/stn-part1/" target="_blank" rel="noopener">此篇博客</a><br>&emsp;&emsp;一个好的分类模型应该能将物体的姿态和形变与纹理和形状解耦，也就是说，即使纹理或形状发生改变，模型也能将其正确分类。CNN网络的max-pooling层对特征的位置具有一定程度的空间不变性，但由于kernel的大小有限，所以作用范围有限；另外，pooling操作是不记录特征的位置的，也就是说只要图片中出现了人特征（如鼻子，眼睛，嘴等）就将其分为人这一类，而并不管这些特征是不是在对应的位置，是不是组合成了一个人脸；再另外，max-pooling操作实际上忽略了feature map中75%的信息，会损失一些信息，kernel是定义好的，不可训练，并且低层的空间不变性并不是很强。<br>&emsp;&emsp;而STN网络则解决了以上问题，STN可以插入到任何网络中，能通过端到端的方式训练，而且输入是feature map的某一个channel，而pooling操作是对所有的输入样本都用一个操作。<br>&emsp;&emsp;在了解STN之前，先了解仿射变换。仿射变换=线性变换+平移，包括平移、旋转、缩放、斜切，可以表示为y=Ax+b，其中A可以实现旋转和缩放，除A外，其余均为向量。使用增广矩阵和增广向量，使用矩阵乘法同时表示线性变换和平移：<br><img src="/images/stn/linear.png" alt="" title="矩阵乘法表示仿射变换"></p>
-<p>&emsp;&emsp;这个就是仿射变换的源像素与目标像素坐标变换的公式，其中，s和t分别表示源像素和目标像素，等号左侧计算得到的就是经过仿射变换后的像素位置，所以仿射变换就可以简化为6个参数，而STN网络正是要自动学习这6个参数。得到变换后的像素位置后，我们就可以根据源像素和目标像素的对应关系计算目标像素位置的像素值。由于计算得到的目标像素位置不一定是整数，所以目标像素值是通过双线性插值来计算的。<br>&emsp;&emsp;下面是STN网络的介绍。STN网络分成三个部分：Localisation Network, Parameterised Sampling Grid, Differentiable Image Sampling。<br>&emsp;&emsp;首先，定位网络，输入大小为(H, W, C)的feature map，通过全连接或卷积操作输入形状为(6,)的变换矩阵；<br>&emsp;&emsp;其次是参数化采样栅格，这个部分的作用是输出一些点，点的选取是根据输入的图像中应该采样哪些点才能得到想要的输出，也就是未经变换的ROI区域，如下图所示，图中U为原图像，其中的像素点为源像素；V为采样栅格经仿射变换得到的与图U同样大小的图片，其中的像素为目标像素。图a中变换矩阵为单位矩阵，也就是同等映射，ROI区域为原图像；图b中变换矩阵为仿射变换矩阵，ROI区域为倾斜的9。这里实际上就可以表示为刚刚提到的仿射变换的公式，只是将s和t是互换的，也就是说，等号左侧是源像素，等号右侧是目标像素，之所以这样操作是因为，这一部分和下一部分是配套使用的。另外，这一部分的坐标是经过归一化的，坐标范围为[-1,1]，目的是让仿射变换的中心在图像的中心，而不是左上角，这样对图像进行变换，如旋转的时候是沿着图像中心，而非左上角<br><img src="/images/stn/sampling_grid.png" alt="" title="采样栅格"></p>
-<p>&emsp;&emsp;最后是可微分图像采样部分，之前说第二部分和第三部分是搭配使用的，是因为第三部分主要是计算目标像素位置的像素值，这里主要是用双线性插值法。在第二部分计算出当前目标像素位置对应的源像素位置后，结合源像素周围四个像素点的像素值，使用双线性插值的方法计算目标像素值，也就是说，第二部分的输出源像素位置是第三部分的输入，第三部分就得到了目标像素位置的像素值，所有目标像素位置的像素值均被计算后，就得到了目标图像，也就是经仿射变换后的图像，完成了整个仿射变换的过程。<br>&emsp;&emsp;下面是一些STN网络的结果<br><img src="/images/stn/stn_result.png" alt="" title="结果"><br>&emsp;&emsp;STN网络结果的变换过程可以<a href="http://torch.ch/blog/2015/09/07/spatial_transformers.html" target="_blank" rel="noopener">参考这个网址</a>，当然STN并不局限于仿射变换，不同的变换方法只是参数数量不同而已。</p>
-<hr>
-<p>&emsp;&emsp;心塞，上一次更新内容时没有提交源文件，导致只生成了网页，没有对应的源文件，再次更新时，只能把之前的两篇又重新写了一遍。事实证明，实践出真知，还是要多动手，多应用呀！<br><img src="/images/stn/home.png" alt="" title="之前的主页"><br><img src="/images/stn/STN.png" alt="" title="之前的STN网络页面"><br><img src="/images/stn/keypoint.png" alt="" title="之前的关键点检测页面"></p>
+        <p>&emsp;&emsp;本文通过对人身体部位的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。<br>&emsp;&emsp;为了构建P-CNN特征，我们首先计算相邻帧的光流，计算方法借鉴ECCV-2004的论文：High accuracy optical flow estimation based on a theory for warping，速度较快，精度较高，在其他基于光流的CNN方法中都有应用，如双流方法，运动场v<sub>x</sub>和v<sub>y</sub>的值转换到[0, 255]，转换的方法为a*v<sub>x|y</sub>+b，其中a=16，b=128。低于0的值和高于255的值都被截断，并将光流值转换为光流图，三个通道分别是转换后的v<sub>x</sub>和v<sub>y</sub>和光流幅值。<br>&emsp;&emsp;给定视频帧和对应的身体关节位置，我们将RGB图片patch和光流patchcrop成右手、左手、上身、整个身体和整张图片，每个patch均resize成224*224作为CNN的输入，为了表示外观和运动patch，我们使用两个独立的CNN网络，包括5个卷积层和3个全连接层，第二个全连接层的神经元个数是4096，作为视频帧的描述子f<sup>p</sup><sub>t</sub>，对于RGB的patch，我们使用VGG-f网络，在ImageNet ILSVRC-2012上预训练；对于光流patch，我们使用CVPR-2015中Finding action tubes的网络，在UCF-101上进行预训练。<br><img src="/images/PCNN/architecture.png" alt="" title="RCNN结构"><br>&emsp;&emsp;将所有帧的描述子f<sup>p</sup><sub>t</sub>进行集成得到一个固定长度的视频描述子，集成的方法为求最小和最大。那么静态视频描述子可以表示为<br><img src="/images/PCNN/static.png" alt=""><br><img src="/images/PCNN/minmax.png" alt=""><br>&emsp;&emsp;为了获取每帧描述子随时间的变化，考虑使用描述子之间的差值，同样计算差值的最大值和最小值作为动态视频描述子。<br><img src="/images/PCNN/delta.png" alt=""><br><img src="/images/PCNN/dynamic.png" alt=""><br>&emsp;&emsp;最终，将所有部位运动和外观特征归一化并拼接，归一化方法是除以训练集中f<sup>p</sup><sub>t</sub>的平均L2范数。当然在后面的实验中也评估了不同集成方法的效果。<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;</p>
 
       
     </div>
@@ -361,11 +356,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/仿射变换/" rel="tag"># 仿射变换</a>
-          
-            <a href="/tags/CNN/" rel="tag"># CNN</a>
-          
-            <a href="/tags/网络优化/" rel="tag"># 网络优化</a>
+            <a href="/tags/位姿/" rel="tag"># 位姿</a>
           
         </div>
       
@@ -378,8 +369,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/显著性/" rel="next" title="显著性">
-                <i class="fa fa-chevron-left"></i> 显著性
+              <a href="/action_6/" rel="next" title="Long-term Recurrent Convolutional Networks for Visual Recognition and Description (CVPR 2015)">
+                <i class="fa fa-chevron-left"></i> Long-term Recurrent Convolutional Networks for Visual Recognition and Description (CVPR 2015)
               </a>
             
           </div>
@@ -387,10 +378,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/keypoint/" rel="prev" title="关键点检测">
-                关键点检测 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>

@@ -41,7 +41,10 @@ tags:
 &emsp;&emsp;空间融合，即沿时间t组合特征图x<sub>t</sub>，得到结果y<sub>t</sub>，一种处理时序输入的方法是沿时间平均化网络的预测，这种情况只对2D(x, y)进行pool，如下图a中所示。考虑一个时序pooling层的输入为x， shape=H\*W\*T\*D，通过沿时间t=1...T来堆叠空间的特征图生成。
 ![](/images/Fusion/temporal.png "")
 ### 3D-Pooling
-&emsp;&emsp;使用3D pooling块
+&emsp;&emsp;使用尺寸为W'\*H'\*T'的3D pooling块对堆叠的数据进行max-pooling，这是将2D pooling延伸到时间域的最直接的扩展方法，如上图b所示，例如要pool三个时序样本，那么可以沿三个堆叠的对应通道进行3\*3\*3的max-pooling，没有不同通道间的pooling。
+### 3D Conv+Pooling
+&emsp;&emsp;首先对四通道的输入x进行卷积，滤波器尺寸为W''\*H''\*D\*D'，卷积之后是上述的3D poolinig层，此方法如上图c所示，滤波器能以权重的形式，使用W''\*H''\*D的卷积核建模一个局部时空区域的特征的组合，这个区域通常是3\*3\*3（空间\*时间)。
+## 提出的网络结构
 \----------------未完待续
 &emsp;&emsp;
 &emsp;&emsp;

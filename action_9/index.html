@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="ActivityNet," />
 
 
 
@@ -79,13 +79,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="个人笔记">
-<meta property="og:url" content="https://mna12478.github.io/page/2/index.html">
+<meta name="description" content="&amp;emsp;&amp;emsp;卷积网络在静态图片的识别中取得了很大的成效，但是在动作识别中，相比于传统方法，优势并没有那么明显，本文探索了基于卷积神经网络的动作识别方法，尤其是在有限的训练样本的情况下，提出了时序分割网络（Temporal Segment Network, TSN)，该方法是基于长时时序结构建模。本文的代码已经公开。&amp;emsp;&amp;emsp;现有的方法多是在剪辑过的视频上进行试验，但是在实">
+<meta name="keywords" content="ActivityNet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Temporal Segment Networks Towards Good Practices for Deep Action Recognition (ECCV 2016, PAMI 2018)">
+<meta property="og:url" content="https://mna12478.github.io/action_9/index.html">
 <meta property="og:site_name" content="个人笔记">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;卷积网络在静态图片的识别中取得了很大的成效，但是在动作识别中，相比于传统方法，优势并没有那么明显，本文探索了基于卷积神经网络的动作识别方法，尤其是在有限的训练样本的情况下，提出了时序分割网络（Temporal Segment Network, TSN)，该方法是基于长时时序结构建模。本文的代码已经公开。&amp;emsp;&amp;emsp;现有的方法多是在剪辑过的视频上进行试验，但是在实">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-02T08:01:18.451Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="个人笔记">
+<meta name="twitter:title" content="Temporal Segment Networks Towards Good Practices for Deep Action Recognition (ECCV 2016, PAMI 2018)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;卷积网络在静态图片的识别中取得了很大的成效，但是在动作识别中，相比于传统方法，优势并没有那么明显，本文探索了基于卷积神经网络的动作识别方法，尤其是在有限的训练样本的情况下，提出了时序分割网络（Temporal Segment Network, TSN)，该方法是基于长时时序结构建模。本文的代码已经公开。&amp;emsp;&amp;emsp;现有的方法多是在剪辑过的视频上进行试验，但是在实">
 
 
 
@@ -115,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://mna12478.github.io/page/2/"/>
+  <link rel="canonical" href="https://mna12478.github.io/action_9/"/>
 
 
 
 
 
-  <title>个人笔记</title>
+  <title>Temporal Segment Networks Towards Good Practices for Deep Action Recognition (ECCV 2016, PAMI 2018) | 个人笔记</title>
   
 
 
@@ -140,8 +145,7 @@
     
   
 
-  <div class="container sidebar-position-right 
-  page-home">
+  <div class="container sidebar-position-right page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -224,9 +228,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -239,7 +243,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/STN/">
+    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/action_9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="mna12478">
@@ -256,9 +260,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/STN/" itemprop="url">Spatial Transformer Networks</a></h1>
+          <h1 class="post-title" itemprop="name headline">Temporal Segment Networks Towards Good Practices for Deep Action Recognition (ECCV 2016, PAMI 2018)</h1>
         
 
         <div class="post-meta">
@@ -270,8 +272,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-21T10:09:01+08:00">
-                2018-04-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-01T09:02:23+08:00">
+                2019-11-01
               </time>
             
 
@@ -293,8 +295,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
+                  <a href="/categories/动作识别/" itemprop="url" rel="index">
+                    <span itemprop="name">动作识别</span>
                   </a>
                 </span>
 
@@ -330,18 +332,8 @@
       
 
       
-        
-          
-          &emsp;&emsp;STN网络是谷歌提出来一个模型，可以看成CNN网络中的一个插件，从效果上看，STN网络能通过无监督的方式自动学习，找到图片中的ROI区域并进行一系列逆变换，将ROI区域的物体转换为正常形态，实现空间不变性。本文参考了此篇博客&emsp;&emsp;一个好的分类模型应该能将物体
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/STN/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
+        <p>&emsp;&emsp;卷积网络在静态图片的识别中取得了很大的成效，但是在动作识别中，相比于传统方法，优势并没有那么明显，本文探索了基于卷积神经网络的动作识别方法，尤其是在有限的训练样本的情况下，提出了时序分割网络（Temporal Segment Network, TSN)，该方法是基于长时时序结构建模。本文的<a href="https://github.com/yjxiong/temporal-segment-networks" target="_blank" rel="noopener">代码</a>已经公开。<br>&emsp;&emsp;现有的方法多是在剪辑过的视频上进行试验，但是在实际中我们需要在没有剪辑过的 视频（如THUMOS，ActivityNet）进行试验，每个动作可能只占整个视频的一小部分，主要的背景部分可能会干扰动作识别模型的预测。为了解决这个问题，我们需要考虑定位动作的位置，同时避免背景的影响。其次，训练动作识别模型时会遇到一些问题：训练深度卷积网络通常需要大量的训练样本才能达到最优的表现，但是现有公开的动作识别数据库，如UCF-101和HMDB51在规模和复杂度上都还很局限，模型容易过拟合；提取光流特征来获取短时运动信息成为了一个计算的瓶颈。所以，本文从以下几个方面着手：如何高效学习视频表示，从而提取长时时序结构；如何在实际的未剪辑视频中应用模型进行识别；在给定有限的训练样本的情况下如何有效地学习卷积网络，并将模型应用到大规模的数据中。<br>&emsp;&emsp;我们提出的TSN网络提供了一个简单并且通用的学习动作视频中动作模型的网络，这个模型是基于，我们观测到连续的视频帧是高度冗余的，稀疏并且全局的时序采样策略更适合并且更高效。TSN框架首先使用稀疏采样方案在较长的视频序列上提取短片段snippet，首先将视频划分为固定数量的分段segment，然后从每个片段中随机采样一个片段。之后，使用分段一致性函数来集成采样的snippet中的信息，这样可以建模整个视频的长时时序结构，计算复杂度独立于视频长度，实际上，我们全面研究了不同段数的影响，并提出了五个汇总函数来总结这些采样片段的预测分数，包括三种基本形式：average pooling, max pooling和加权平均，以及两个高级方案：top-K pooling和自适应attention加权。后面两个的设计是为了在训练时自动化高亮有判别性的snippet。<br>&emsp;&emsp;为了将学习之后的模型应用到未剪辑视频，我们设计了一个分级集成策略，叫做M-TWI (Multi-scale Temporal Window Integration)。我们首先将未剪辑的视频分成固定时间的短时间窗的序列，然后为每个窗口独立地进行动作识别，窗口内的动作识别是通过max-pooling窗口中所有snippet-level的识别分数得到的，最终，通过时序segment网络的集成函数，我们使用top-K pooling法或attention权重来集成这些窗口的预测，从而得到video-level的识别结果。由于隐含选择有间隔的判别性动作的能力，同时能抑制噪声背景影响，本文提出的集成模型能有效识别未剪辑的视频。<br>&emsp;&emsp;为了解决有限数据库的问题，<br>———–未完待续<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;</p>
+
       
     </div>
     
@@ -356,162 +348,36 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/显著性/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="mna12478">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="个人笔记">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/显著性/" itemprop="url">显著性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-07T16:54:55+08:00">
-                2018-04-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/ActivityNet/" rel="tag"># ActivityNet</a>
           
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
+      
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
+      
       
       
 
       
-        
-          
-          &emsp;&emsp;在长期的进化中，人类拥有了在复杂环境中快速发现感兴趣目标的能力，这种高度发达的注意力机制使人们在看一张图片时，其注意点首先会落在更能刺激视觉的区域，即显著性区域。目前我们拥有海量的图像数据，而显著性目标检测即模仿人类的视觉注意力机制，在图片数据中找到最重要的信息，进行后续处理
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/显著性/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/action_8/" rel="next" title="Convolutional Two-Stream Network Fusion for Video Action Recognition (CVPR 2016)">
+                <i class="fa fa-chevron-left"></i> Convolutional Two-Stream Network Fusion for Video Action Recognition (CVPR 2016)
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
 
-    
+          <span class="post-nav-divider"></span>
 
-    
-
-    
-
-    <footer class="post-footer">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
       
 
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -521,14 +387,11 @@
   </article>
 
 
-    
-  </section>
 
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
-  </nav>
-
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -536,6 +399,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -757,6 +624,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

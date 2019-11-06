@@ -88,7 +88,9 @@
 <meta property="og:description" content="&amp;emsp;&amp;emsp;本文介绍了一种新的用于动作识别的视频表示方法，通过将双流网络与科学系的时空特征组合，在视频的整个时空范围内聚合局部卷积特征，得到的结构是端到端可训练的，为整个视频分类。我们探索了沿空间和时间pooling的不同策略，以及几种组合不同stream信号的策略，我们发现联合pool空间和时间很重要，但是外观和运动stream最好汇总到各自单独的表示中。&amp;emsp;&amp;emsp;3D">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://mna12478.github.io/images/VLAD/fig_basket.png">
-<meta property="og:updated_time" content="2019-11-06T00:59:13.823Z">
+<meta property="og:image" content="https://mna12478.github.io/images/VLAD/fig_pooling.png">
+<meta property="og:image" content="https://mna12478.github.io/images/VLAD/func_residual.png">
+<meta property="og:updated_time" content="2019-11-06T15:11:13.937Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Actionvlad Learning spatio-temporal aggregation for action classification (CVPR 2017)">
 <meta name="twitter:description" content="&amp;emsp;&amp;emsp;本文介绍了一种新的用于动作识别的视频表示方法，通过将双流网络与科学系的时空特征组合，在视频的整个时空范围内聚合局部卷积特征，得到的结构是端到端可训练的，为整个视频分类。我们探索了沿空间和时间pooling的不同策略，以及几种组合不同stream信号的策略，我们发现联合pool空间和时间很重要，但是外观和运动stream最好汇总到各自单独的表示中。&amp;emsp;&amp;emsp;3D">
@@ -312,7 +314,10 @@
       
 
       
-        <p>&emsp;&emsp;本文介绍了一种新的用于动作识别的视频表示方法，通过将双流网络与科学系的时空特征组合，在视频的整个时空范围内聚合局部卷积特征，得到的结构是端到端可训练的，为整个视频分类。我们探索了沿空间和时间pooling的不同策略，以及几种组合不同stream信号的策略，我们发现联合pool空间和时间很重要，但是外观和运动stream最好汇总到各自单独的表示中。<br>&emsp;&emsp;3D时空卷积方法能学习到复杂的时空依赖，但是在识别性能方面很难扩展；而双流网络将视频分成运动流和外观流，由于能轻松使用新的深度网络，所以性能逐渐超过时空卷积，但是双流卷积忽视了视频的长时时序结构，在测试阶段分别对采样的一帧或堆叠的几帧进行识别，然后取平均来得到最终的结果，但这种时序的平均不一定能建模复杂的时空结构，以下图篮球投篮为例，给定视频的少数几帧，很有可能与其他的动作，如跑、运球、挑、扔等混淆，使用late fusion或者平均需要视频帧都属于相同的子动作来分配给不同的类别，所以不是一个最优方案，我们需要的是一个全局特征描述子，能对整个视频进行集成，包括场景的外观和人的动作，不需要每帧都分配一个单独的动作类别。<br><img src="/images/VLAD/fig_basket.png" alt=""><br>&emsp;&emsp;所以，本文提出了ActionVLAD模型，核心是NetVLAD集成层的时空扩展，我们将新的层成为ActionVLAD。在扩展NetVLAD时带来了两个挑战：将不同时间frame-level特征整合为video-level表示的最好的方法是什么；如何组合来自不同stream的信号。<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>——未完待续</p>
+        <p>&emsp;&emsp;本文介绍了一种新的用于动作识别的视频表示方法，通过将双流网络与科学系的时空特征组合，在视频的整个时空范围内聚合局部卷积特征，得到的结构是端到端可训练的，为整个视频分类。我们探索了沿空间和时间pooling的不同策略，以及几种组合不同stream信号的策略，我们发现联合pool空间和时间很重要，但是外观和运动stream最好汇总到各自单独的表示中。<br>&emsp;&emsp;3D时空卷积方法能学习到复杂的时空依赖，但是在识别性能方面很难扩展；而双流网络将视频分成运动流和外观流，由于能轻松使用新的深度网络，所以性能逐渐超过时空卷积，但是双流卷积忽视了视频的长时时序结构，在测试阶段分别对采样的一帧或堆叠的几帧进行识别，然后取平均来得到最终的结果，但这种时序的平均不一定能建模复杂的时空结构，以下图篮球投篮为例，给定视频的少数几帧，很有可能与其他的动作，如跑、运球、挑、扔等混淆，使用late fusion或者平均需要视频帧都属于相同的子动作来分配给不同的类别，所以不是一个最优方案，我们需要的是一个全局特征描述子，能对整个视频进行集成，包括场景的外观和人的动作，不需要每帧都分配一个单独的动作类别。<br><img src="/images/VLAD/fig_basket.png" alt=""><br>&emsp;&emsp;所以，本文提出了ActionVLAD模型，核心是NetVLAD集成层的时空扩展，我们将新的层成为ActionVLAD。在扩展NetVLAD时带来了两个挑战：将不同时间frame-level特征整合为video-level表示的最好的方法是什么；如何组合来自不同stream的信号。</p>
+<h1 id="Video-level双流结构"><a href="#Video-level双流结构" class="headerlink" title="Video-level双流结构"></a>Video-level双流结构</h1><h2 id="可训练时空集成"><a href="#可训练时空集成" class="headerlink" title="可训练时空集成"></a>可训练时空集成</h2><p>&emsp;&emsp;假设有x<sub>i, t</sub>，一个D维的局部描述子，提取自一段空间位置i属于{1…N}和帧t属于{1…T}的视频，我们想在时间和空间中集成整个视频的描述子，同时保存他们的信息内容，做法如下：首先将描述空间R<sup>D</sup>拆成K个cell，拆解方法是使用由锚点{c<sub>k</sub>}表示的K个动作词词汇，如下图c所示。下图是为一个有不同特征的集合进行不同pooling策略的结果，里面的点对应视频的特征，不同的颜色对应不同的子动作，a和b适用于比较类似的特征，不能充分地捕获特性的完整分布；c中的表示对外观和运动特征进行了聚类，并从最近的聚类中心集成他们的残差。<br><img src="/images/VLAD/fig_pooling.png" alt=""><br>&emsp;&emsp;每个视频描述子x<sub>i, t</sub>分配给其中一个cell，并用一个残差向量x<sub>it</sub>-c<sub>k</sub>表示，这个残差向量记录了描述子和锚点之间的差异，然后计算整个视频残差向量的和，如以下公式表示，其中x<sub>it</sub>[j]和c<sub>k</sub>[j]是描述子x<sub>it</sub>和c<sub>k</sub>的第j个元素，alpha是一个可调整的超参，公式中第一项表示将描述子x<sub>it</sub>soft-assignment到第k个cell上，第二项是描述子与cell k的锚点之间的残差，两个求和符号表示沿时间和空间集成，输出矩阵V，第k列表示在第k个cell中集成的描述子，然后对每列数据进行内部归一化，堆叠和L2归一化，从而得到一个整个视频单独的描述子v属于R<sup>D</sup><br><img src="/images/VLAD/func_residual.png" alt=""><br>&emsp;&emsp;以上公式的来源是想用残差向量记录提取的描述子与用锚c<sub>k</sub>表示的典型动作（或子动作）的差异，然后通过在每个cell内部计算和来将整个视频的残差向量集成，所有的参数，包括特征提取、动作词{c<sub>k</sub>}和分类器，都是以端到端的方式共同学习的，公式1中的时空结合方法是可微的，允许将错误的梯度反向传播给低层，这里的集成方法是NetVLAD在时空方面的扩展，但是我们是沿着时间t进行求和，我们将这个沿时空的扩展称为ActionVLAD。<br>&emsp;&emsp;以上集成方法与平均/最大pooling的区别在于，后者将整个点的分布描述为一个单独的描述子，对于表示一个包含多个子动作的视频来说是次优的，而以上集成方法通过将描述子空间分成多个cell，并在每个cell中进行pooling，来表示带有多个子动作的描述子的整个分布。理论上，在描述子map和pooling操作之间的隐层，也会在pooling之前将描述子空间分成两个空间（通过使用ReLU），但是，事实证明很难训练一个维度高达KD=32768的隐层。我们假设ActionVLAD框架施加了很强的正则化约束，使得在有限的训练数据下学习这样大型的模型是可行的（就像动作分类一样）。</p>
+<h3 id="集成哪一层？"><a href="#集成哪一层？" class="headerlink" title="集成哪一层？"></a>集成哪一层？</h3><p>&emsp;&emsp;理论上，上面提到的时空集成层应该能放在网络的任一level，来pool对应的feature map，所以需要比较不同的组合，基础的双流网络结构是VGG-16，这里考虑只有外观stream，但是在下一部分讨论组合外观和运动stream的不同方法。<br>&emsp;&emsp;双流网络首先使用所有视频的所有帧训练一个frame-level的分类器，在测试时，平均化T个平均采样的帧的预测结果。我们使用这个基础网络（在frame-level上预训练）作为一个特征生成器，从不同的帧提供输入给可训练的ActionVLAD的pooling层，而进行pool的层，我们考虑两种选择，首先考虑pool网络中FC层的输出，视频中每T帧被表示为1*1的空间feature map，维度为4096，也就是为视频中每T帧pool一个4096维的描述子；其次，考虑pool卷积层的特征（考虑conv4_3和conv5_3），对于conv5_3，14*14的空间feature map，每T帧有512维描述子，所以从每T帧中pool196个512维的描述子，而实验证明，在最高的卷积层进行pool的性能是最好的。</p>
+<h3 id="如何组合光流和RGB-stream？"><a href="#如何组合光流和RGB-stream？" class="headerlink" title="如何组合光流和RGB stream？"></a>如何组合光流和RGB stream？</h3><p>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>——未完待续</p>
 
       
     </div>
@@ -405,8 +410,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -466,6 +480,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Video-level双流结构"><span class="nav-number">1.</span> <span class="nav-text">Video-level双流结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可训练时空集成"><span class="nav-number">1.1.</span> <span class="nav-text">可训练时空集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#集成哪一层？"><span class="nav-number">1.1.1.</span> <span class="nav-text">集成哪一层？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何组合光流和RGB-stream？"><span class="nav-number">1.1.2.</span> <span class="nav-text">如何组合光流和RGB stream？</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

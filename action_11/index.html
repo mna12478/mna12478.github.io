@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="位姿估计,光流,时空特征," />
+  <meta name="keywords" content="CNN,Pooling," />
 
 
 
@@ -79,27 +79,26 @@
 
 
 
-<meta name="description" content="&amp;emsp;&amp;emsp;本文通过对人身体关节的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。&amp;emsp;&amp;emsp;总体来说，这篇文章在以前几个">
-<meta name="keywords" content="位姿估计,光流,时空特征">
+<meta name="description" content="&amp;emsp;&amp;emsp;本文是为解决大规模visual place recognition问题，快速准确识别一个查询照片的位置，也就是说，给定一张图片A，要从其他图片中找到一张图片，这张中带有图片A中的地点，如下图所示。本文主要有三个贡献点：提出一个端到端可训练的卷积网络，核心部分NetVLAD是一个新的VLAD层，VLAD (Vector of Locally Aggregated Descri">
+<meta name="keywords" content="CNN,Pooling">
 <meta property="og:type" content="article">
-<meta property="og:title" content="P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015)">
-<meta property="og:url" content="https://mna12478.github.io/action_7/index.html">
+<meta property="og:title" content="NetVLAD CNN architecture for weakly supervised place recognition">
+<meta property="og:url" content="https://mna12478.github.io/action_11/index.html">
 <meta property="og:site_name" content="个人笔记">
-<meta property="og:description" content="&amp;emsp;&amp;emsp;本文通过对人身体关节的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。&amp;emsp;&amp;emsp;总体来说，这篇文章在以前几个">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;本文是为解决大规模visual place recognition问题，快速准确识别一个查询照片的位置，也就是说，给定一张图片A，要从其他图片中找到一张图片，这张中带有图片A中的地点，如下图所示。本文主要有三个贡献点：提出一个端到端可训练的卷积网络，核心部分NetVLAD是一个新的VLAD层，VLAD (Vector of Locally Aggregated Descri">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/architecture.png">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/static.png">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/minmax.png">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/delta.png">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/dynamic.png">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/pose.png">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/architecture.png">
-<meta property="og:image" content="https://mna12478.github.io/images/PCNN/aggregation.png">
-<meta property="og:updated_time" content="2019-10-26T13:03:30.709Z">
+<meta property="og:image" content="https://mna12478.github.io/images/NetVLAD/fig_exam.png">
+<meta property="og:image" content="https://mna12478.github.io/images/NetVLAD/func_VLAD.png">
+<meta property="og:image" content="https://mna12478.github.io/images/NetVLAD/func_soft.png">
+<meta property="og:image" content="https://mna12478.github.io/images/NetVLAD/func_soft1.png">
+<meta property="og:image" content="https://mna12478.github.io/images/NetVLAD/func_soft2.png">
+<meta property="og:image" content="https://mna12478.github.io/images/NetVLAD/fig_benefit.png">
+<meta property="og:image" content="https://mna12478.github.io/images/NetVLAD/fig_archi.png">
+<meta property="og:updated_time" content="2019-11-08T13:46:05.501Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015)">
-<meta name="twitter:description" content="&amp;emsp;&amp;emsp;本文通过对人身体关节的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。&amp;emsp;&amp;emsp;总体来说，这篇文章在以前几个">
-<meta name="twitter:image" content="https://mna12478.github.io/images/PCNN/architecture.png">
+<meta name="twitter:title" content="NetVLAD CNN architecture for weakly supervised place recognition">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;本文是为解决大规模visual place recognition问题，快速准确识别一个查询照片的位置，也就是说，给定一张图片A，要从其他图片中找到一张图片，这张中带有图片A中的地点，如下图所示。本文主要有三个贡献点：提出一个端到端可训练的卷积网络，核心部分NetVLAD是一个新的VLAD层，VLAD (Vector of Locally Aggregated Descri">
+<meta name="twitter:image" content="https://mna12478.github.io/images/NetVLAD/fig_exam.png">
 
 
 
@@ -129,13 +128,13 @@
 
 
 
-  <link rel="canonical" href="https://mna12478.github.io/action_7/"/>
+  <link rel="canonical" href="https://mna12478.github.io/action_11/"/>
 
 
 
 
 
-  <title>P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015) | 个人笔记</title>
+  <title>NetVLAD CNN architecture for weakly supervised place recognition | 个人笔记</title>
   
 
 
@@ -252,7 +251,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/action_7/">
+    <link itemprop="mainEntityOfPage" href="https://mna12478.github.io/action_11/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="mna12478">
@@ -269,7 +268,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015)</h1>
+          <h1 class="post-title" itemprop="name headline">NetVLAD CNN architecture for weakly supervised place recognition</h1>
         
 
         <div class="post-meta">
@@ -281,8 +280,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-25T20:09:20+08:00">
-                2019-10-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-07T21:20:14+08:00">
+                2019-11-07
               </time>
             
 
@@ -291,28 +290,6 @@
             
           </span>
 
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/动作识别/" itemprop="url" rel="index">
-                    <span itemprop="name">动作识别</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -341,10 +318,9 @@
       
 
       
-        <p>&emsp;&emsp;本文通过对人身体关节的跟踪集成了运动和外观信息，提出了P-CNN (Pose-based Convolutional Neural Network)描述子。在以往的动作识别方法中，基于局部运动描述子的方法在识别移动相机中的粗糙的动作中很成功，如站起来、挥手和跳舞等，基于全局特征的方法，由于缺少结构，不太适合识别微小的变化。<br>&emsp;&emsp;总体来说，这篇文章在以前几个方法的基础上做了集成和部分修改，在动作识别的任务中有一定成效。</p>
-<h1 id="PCNN网络结构"><a href="#PCNN网络结构" class="headerlink" title="PCNN网络结构"></a>PCNN网络结构</h1><p>&emsp;&emsp;为了构建P-CNN特征，我们首先计算相邻帧的光流，计算方法借鉴ECCV-2004的论文：High accuracy optical flow estimation based on a theory for warping，速度较快，精度较高，在其他基于光流的CNN方法中都有应用，如双流方法，运动场v<sub>x</sub>和v<sub>y</sub>的值转换到[0, 255]，转换的方法为a*v<sub>x|y</sub>+b，其中a=16，b=128。低于0的值和高于255的值都被截断，并将光流值转换为光流图，三个通道分别是转换后的v<sub>x</sub>和v<sub>y</sub>和光流幅值。<br>&emsp;&emsp;给定视频帧和对应的身体关节位置，我们将RGB图片patch和光流patch均crop成右手、左手、上身、整个身体和整张图片，每个patch均resize成224*224作为CNN的输入，为了表示外观和运动patch，我们使用两个独立的CNN网络，包括5个卷积层和3个全连接层，第二个全连接层的神经元个数是4096，作为视频帧的描述子f<sup>p</sup><sub>t</sub>，对于RGB的patch，我们使用VGG-f网络，在ImageNet ILSVRC-2012上预训练；对于光流patch，我们使用CVPR-2015中Finding action tubes的网络，在UCF-101上进行预训练。<br><img src="/images/PCNN/architecture.png" alt="" title="RCNN结构"><br>&emsp;&emsp;将所有帧的描述子f<sup>p</sup><sub>t</sub>进行集成得到一个固定长度的视频描述子，集成的方法为求最小和最大。那么静态视频描述子可以表示为<br><img src="/images/PCNN/static.png" alt=""><br><img src="/images/PCNN/minmax.png" alt=""><br>&emsp;&emsp;为了获取每帧描述子随时间的变化，考虑使用描述子之间的差值，同样计算差值的最大值和最小值作为动态视频描述子。<br><img src="/images/PCNN/delta.png" alt=""><br><img src="/images/PCNN/dynamic.png" alt=""><br>&emsp;&emsp;最终，将所有部位运动和外观特征归一化并拼接，归一化方法是除以训练集中f<sup>p</sup><sub>t</sub>的平均L2范数。当然在后面的实验中也评估了不同集成方法的效果。</p>
-<h1 id="位姿估计"><a href="#位姿估计" class="headerlink" title="位姿估计"></a>位姿估计</h1><p>&emsp;&emsp;首先基于Mixing body-part sequences for human pose estimation (CVPR 2014)的方法为单独的视频帧预测位姿，此方法是基于可变性部位模型来定位身体关节的位置，在本文中使用时又在FLIC数据库上重新训练。在预测出关节的位置后，使用动态规划将它们连接起来，同时，限制一个位姿序列中的关节的运动与关节位置提取的光流一致。提取的关节如下图所示，包括成功的和失败的案例。<br><img src="/images/PCNN/pose.png" alt="" title="关节点提取案例"><br>&emsp;&emsp;获得位姿后，提取HLPF (High-Level Pose Features)，可参考Towards understanding action recognition (ICCV 2013)，给定位姿序列P，首先相对于人的身高，将关节的位置进行归一化，然后计算每个关节相对于头的偏移量，而且相对于头的偏移量，比相对于躯干的偏移量更稳定。静态特征是所有关节对之间的距离，连接关节对的向量的方向以及连接所有关节三联体的向量所跨越的内角。动态特征是从关节的轨迹中获取的，图关节对之间距离的差异，连接关节对的向量方向的差异，内角的差异等，还包括关节位置的变化，关节方向的变化。<br>&emsp;&emsp;综上，一个视频序列可以表示成量化特征的直方图，分类器使用SVM。</p>
-<h1 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h1><p>&emsp;&emsp;实验部分使用了两个数据库：JHMDB (HMDB的一个子集，ICCV 2013那篇文章提取了关节点)和MPII Cooking Activities，实验结果如下所示。<br><img src="/images/PCNN/architecture.png" alt="" title="PCNN的实验结果"><br><img src="/images/PCNN/aggregation.png" alt="" title="不同集成策略的结果"></p>
+        <p>&emsp;&emsp;本文是为解决大规模visual place recognition问题，快速准确识别一个查询照片的位置，也就是说，给定一张图片A，要从其他图片中找到一张图片，这张中带有图片A中的地点，如下图所示。本文主要有三个贡献点：提出一个端到端可训练的卷积网络，核心部分NetVLAD是一个新的VLAD层，VLAD (Vector of Locally Aggregated Descriptors)是一个常用在图片检索中的图片表示方法；其次，基于弱监督排行loss提出一个训练策略；最后，提出的方法性能很好。<br><img src="/images/NetVLAD/fig_exam.png" alt="" title="尽管query中有很多噪声，如人、汽车等，本文的方法依旧能正确识别"></p>
+<h1 id="place-recognition的深度网络"><a href="#place-recognition的深度网络" class="headerlink" title="place recognition的深度网络"></a>place recognition的深度网络</h1><p>&emsp;&emsp;本文将place recognition看成图像检索问题来处理，带有未知地点的query图片用来可视化搜索大型地理标记图像数据库，top ranked的图片用来作为query的location的建议。通常要设计一个函数f作为图片表示提取器，给定图片I<sub>i</sub>，生成一个固定尺寸的向量f(I<sub>i</sub>)，函数f可以离线计算整个数据库{I<sub>i</sub>}的表示，在线提取query图片的表示f(q)，在测试时，通过查找与query最近的数据库图片来进行视觉搜索，或者近似最近邻查找，通过基于f(q)和f(I<sub>i</sub>)的欧式距离d(q, I<sub>i</sub>)。<br>&emsp;&emsp;大部分图片检索方法是基于提取局部描述子，然后以无序的方式pool描述子，这种方法对translation和partial occlusion有很强的鲁棒性。在本文提出的方法中，我们首先在最后的卷积层对CNN进行crop，并将其看成一个密集描述子提取器，那么若最后一个卷积层的输出为H*W*D，一系列在H*W区域提取的D维描述子，然后基于VLAD设计一个新的pooling层，将提取的描述子pool为一个固定长度的图片表示，而且这层的参数可以通过反向传播来学习，我们将这个新的层成为NetVLAD层。</p>
+<h2 id="NetVLAD：一个通用的VLAD层（fVLAD）"><a href="#NetVLAD：一个通用的VLAD层（fVLAD）" class="headerlink" title="NetVLAD：一个通用的VLAD层（fVLAD）"></a>NetVLAD：一个通用的VLAD层（f<sub>VLAD</sub>）</h2><p>&emsp;&emsp;VLAD是一个常用的描述子pooling方法，常用于instance level检索和图片分类，能获取聚集在图像上的局部描述子的统计信息。bag-of-visual-words集成方法保留可视化单词的计数，VLAD存储每个可视化单词的残差（描述子与对应聚类中心的差异向量）的和，<br>&emsp;&emsp;给定N个D维的局部图像描述子{x<sub>i</sub>}作为输入，K个聚类中心（可视化单词）{c<sub>k</sub>}作为VLAD参数，输出的VLAD图像表示V是K*D维的，为了方便，将V写成K*D维的矩阵，但是这个矩阵是转换为向量，经过归一化之后，作为图像的表示，V中的元素(j,k)的计算方法如下所示，x<sub>i</sub>(j)和c<sub>k</sub>(j)分别是第j维的第i个描述子和第k个聚类中心，alpha<sub>k</sub>(x<sub>i</sub>)表示x<sub>i</sub>与第k个可视化单词之间的关系，如果聚类c<sub>k</sub>是最接近描述子x<sub>i</sub>的类，那么alpha=1，否则为0.V中每个D维的列k记录了分配给c<sub>k</sub>的、残差(x<sub>i</sub>-c<sub>k</sub>)的和，之后对矩阵V进行列方向的内部L2归一化，转化为向量，最后整体L2归一化。<br><img src="/images/NetVLAD/func_VLAD.png" alt=""><br>&emsp;&emsp;受益于图像检索其他方法，本文提出在CNN网络中模拟VLAD，设计一个可训练的通用VLAD层，即NetVLAD，结果是一个强大的可端到端训练的图像表示方法。但是网络中的层需要可微，而VLAD原本是不连续的，因为描述子x<sub>i</sub>到聚类中心c<sub>k</sub>的hard assignment值alpha<sub>k</sub>(x<sub>i</sub>)。为了使这个操作可微，我们将其改为描述子到多个聚类的soft assignment，表示方法如下所示，让权重与描述子x<sub>i</sub>与聚类中心c<sub>k</sub>的接近程度成正比，但是与其他聚类中心的接近程度相关，新的alpha的值分布在0和1之间。<br><img src="/images/NetVLAD/func_soft.png" alt=""><br>&emsp;&emsp;通过展开公式中的平方项，我们看到分子分母中的e<sup>-alpha||x<sub>i</sub>||<sup>2</sup></sup>可以抵消，得到以下形式的soft assgnment。<br><img src="/images/NetVLAD/func_soft1.png" alt=""><br>&emsp;&emsp;其中w<sub>k</sub>=2*alpha*c<sub>k</sub>, b<sub>k</sub>=-alpha*||c<sub>k</sub>||<sup>2</sup>，那么NetVLAD层最终的形式如下所示。<br><img src="/images/NetVLAD/func_soft2.png" alt=""><br>&emsp;&emsp;。其中{w<sub>k</sub>}, {b<sub>k</sub>}, {c<sub>k</sub>}是聚类k中的可训练参数，与原始VLAD描述子类似，NetVLAD层集成了残差x<sub>i</sub>-c<sub>k</sub>在描述子空间不同part的第一顺序的统计特征，权重为描述子x<sub>i</sub>到聚类k的soft-assignment，即新的alpha<sub>k</sub>(x<sub>i</sub>)。但是与原始的VLAD参数{c<sub>k</sub>}相比，NetVLAD的参数有{w<sub>k</sub>}, {b<sub>k</sub>}, {c<sub>k</sub>}，这能促进更好的平滑性，如下图所示。红色和绿色的圈是来自两个不同图片的局部描述子，分配给了相同的聚类，在VLAD的编码下，它们对两幅图像之间相似性得分的贡献是对应残差之间的标量积（因为最终的VLAD向量是L2归一化的），残差向量是描述子与聚类锚点之间的差异，锚点c<sub>k</sub>可以看成一个对于特定聚类k的新的坐标系统的原点，在标准的VLAD中，锚点是作为聚类中心（x）来使残差均匀地分布在数据库中，但是在一个监督学习中，我们知道两个描述子属于不匹配的图片，所以可能会学习一个更好的锚点（*），来使得新的残差的标量积更小。<br><img src="/images/NetVLAD/fig_benefit.png" alt=""><br>&emsp;&emsp;如下图所示，NetVLAD层可以看做一个元层，这个元层进一步分解为连接在有向非循环图中的CNN层。<br><img src="/images/NetVLAD/fig_archi.png" alt=""><br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>——–未完待续</p>
 
       
     </div>
@@ -362,11 +338,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/位姿估计/" rel="tag"># 位姿估计</a>
+            <a href="/tags/CNN/" rel="tag"># CNN</a>
           
-            <a href="/tags/光流/" rel="tag"># 光流</a>
-          
-            <a href="/tags/时空特征/" rel="tag"># 时空特征</a>
+            <a href="/tags/Pooling/" rel="tag"># Pooling</a>
           
         </div>
       
@@ -379,8 +353,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/action_6/" rel="next" title="Long-term Recurrent Convolutional Networks for Visual Recognition and Description (CVPR 2015)">
-                <i class="fa fa-chevron-left"></i> Long-term Recurrent Convolutional Networks for Visual Recognition and Description (CVPR 2015)
+              <a href="/action_10/" rel="next" title="Actionvlad Learning spatio-temporal aggregation for action classification (CVPR 2017)">
+                <i class="fa fa-chevron-left"></i> Actionvlad Learning spatio-temporal aggregation for action classification (CVPR 2017)
               </a>
             
           </div>
@@ -388,10 +362,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/action_8/" rel="prev" title="Convolutional Two-Stream Network Fusion for Video Action Recognition (CVPR 2016)">
-                Convolutional Two-Stream Network Fusion for Video Action Recognition (CVPR 2016) <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -523,7 +493,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PCNN网络结构"><span class="nav-number">1.</span> <span class="nav-text">PCNN网络结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#位姿估计"><span class="nav-number">2.</span> <span class="nav-text">位姿估计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验"><span class="nav-number">3.</span> <span class="nav-text">实验</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#place-recognition的深度网络"><span class="nav-number">1.</span> <span class="nav-text">place recognition的深度网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NetVLAD：一个通用的VLAD层（fVLAD）"><span class="nav-number">1.1.</span> <span class="nav-text">NetVLAD：一个通用的VLAD层（fVLAD）</span></a></li></ol></li></ol></div>
             
 
           </div>

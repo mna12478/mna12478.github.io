@@ -1,7 +1,9 @@
 ---
 title: 3D Convolutional Neural Networks for Human Action Recognition (PAMI 2013)
 date: 2019-09-26 21:43:16
-categories: 动作识别
+categories: 
+- 动作识别
+- 3D卷积
 tags:
 - 动作识别
 - CNN

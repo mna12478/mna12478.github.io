@@ -1,7 +1,10 @@
 ---
 title: Two-Stream Convolutional Networks for Action Recognition in Videos (NIPS 2014)
 date: 2019-10-08 21:01:29
-categories: 动作识别
+categories: 
+- 动作识别
+- Fusion
+- 双流
 tags:
 - 动作识别
 - 双流网络

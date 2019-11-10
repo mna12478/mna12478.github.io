@@ -1,7 +1,10 @@
 ---
 title: Convolutional Two-Stream Network Fusion for Video Action Recognition (CVPR 2016)
 date: 2019-10-26 21:07:29
-categories: 动作识别
+categories: 
+- 动作识别
+- Fusion
+- 双流
 tags:
 - 双流网络
 - 时空融合

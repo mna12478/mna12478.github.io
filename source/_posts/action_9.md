@@ -1,7 +1,10 @@
 ---
 title: Temporal Segment Networks Towards Good Practices for Deep Action Recognition (ECCV 2016, PAMI 2018)
 date: 2019-11-01 09:02:23
-categories: 动作识别
+categories: 
+- 动作识别
+- Fusion
+- 双流
 tags:
 - ActivityNet
 - 双流网络

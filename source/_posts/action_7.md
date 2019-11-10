@@ -1,7 +1,10 @@
 ---
 title: P-CNN Pose-based CNN Features for Action Recognition (ICCV 2015)
 date: 2019-10-25 20:09:20
-categories: 动作识别
+categories: 
+- 动作识别
+- Fusion
+- 双流
 tags:
 - 位姿估计
 - 光流

@@ -1,7 +1,10 @@
 ---
 title: Large-scale Video Classification with Convolutional Neural Networks (CVPR 2014)
 date: 2019-09-25 16:27:58
-categories: 动作识别
+categories: 
+- 动作识别
+- Fusion
+- 时空Fusion
 tags:
 - 动作识别
 - CNN

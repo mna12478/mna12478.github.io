@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="双流,无监督," />
 
 
 
@@ -79,14 +79,18 @@
 
 
 
+<meta name="description" content="&amp;emsp;&amp;emsp;现有的方法依赖光流特征，而传统的光流计算需要为CNN预先计算运动信息，这种两阶段方法计算量大，存储空间需求大，不是可端到端训练的。本文提出一种新的CNN结构用于提取运动信息，我们称之为hidden双流CNN，因为只需要原始像素作为输入，在不需要计算光流的情况下直接预测动作类别，速度10倍快与原始的双流网络，在UCF-101、HMDB51、THUMOS14和ActivityN">
+<meta name="keywords" content="双流,无监督">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hidden Two-Stream Convolutional Networks for Action Recognition (ACCV 2018)">
 <meta property="og:url" content="https://mna12478.github.io/action_12/index.html">
 <meta property="og:site_name" content="个人笔记">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;现有的方法依赖光流特征，而传统的光流计算需要为CNN预先计算运动信息，这种两阶段方法计算量大，存储空间需求大，不是可端到端训练的。本文提出一种新的CNN结构用于提取运动信息，我们称之为hidden双流CNN，因为只需要原始像素作为输入，在不需要计算光流的情况下直接预测动作类别，速度10倍快与原始的双流网络，在UCF-101、HMDB51、THUMOS14和ActivityN">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-10T14:15:08.700Z">
+<meta property="og:updated_time" content="2019-11-10T14:56:00.454Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hidden Two-Stream Convolutional Networks for Action Recognition (ACCV 2018)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;现有的方法依赖光流特征，而传统的光流计算需要为CNN预先计算运动信息，这种两阶段方法计算量大，存储空间需求大，不是可端到端训练的。本文提出一种新的CNN结构用于提取运动信息，我们称之为hidden双流CNN，因为只需要原始像素作为输入，在不需要计算光流的情况下直接预测动作类别，速度10倍快与原始的双流网络，在UCF-101、HMDB51、THUMOS14和ActivityN">
 
 
 
@@ -350,7 +354,9 @@
       
 
       
-        
+        <p>&emsp;&emsp;现有的方法依赖光流特征，而传统的光流计算需要为CNN预先计算运动信息，这种两阶段方法计算量大，存储空间需求大，不是可端到端训练的。本文提出一种新的CNN结构用于提取运动信息，我们称之为hidden双流CNN，因为只需要原始像素作为输入，在不需要计算光流的情况下直接预测动作类别，速度10倍快与原始的双流网络，在UCF-101、HMDB51、THUMOS14和ActivityNet v1.2上都是最好的实时动作识别方法。<br>&emsp;&emsp;经过几年的发展，动作识别方法已经从原来的手动提取特征到现在的学习CNN特征；从encoding外观信息到encoding运动信息；从学习局部特征到学习全局特征。最初的CNN用于动作识别的效果并不是太好，甚至还不如iDT，可能是因为这时候的CNN比较难获取视频帧之间的运动信息，后来的双流网络通过使用传统光流预先计算光流特征解决了这个问题，时序stream极大地提升了CNN的精度，在几个数据库上都超过了iDT。但是现有的CNN网络依旧很难直接从视频中提取运动信息，而先计算光流，再把光流映射为动作标签是一个次优的方法：与CNN步骤相比，光流的预计算耗时耗空间；传统的光流评估完全独立于最终的任务，有研究（Video Enhancement with<br>Task-Oriented Flow, arxiv 2017）表明，固定的光流计算方法不如任务导向的光流计算方法的效果好。所以是次优的。为了解决这个问题，出现了运动向量（20倍快于传统双流网络，但编码之后的运动向量缺少好的结构，并且包含噪声和不正确的运动模式，所以导致精度却下降很多，请见论文：Real-time Action Recognition with Enhanced Motion Vector CNNs, CVPR 2016）、RGB图像差异或者RNN、3DCNN等结构，但是大多数不如光流特征，在动作识别的任务中有效。</p>
+<h1 id="Hidden双流网络"><a href="#Hidden双流网络" class="headerlink" title="Hidden双流网络"></a>Hidden双流网络</h1><h2 id="无监督光流学习"><a href="#无监督光流学习" class="headerlink" title="无监督光流学习"></a>无监督光流学习</h2><p>&emsp;&emsp;我们将光流计算方法看成图像重建问题。给定一对视频帧，我们希望生成光流，允许我们从一帧重建另一帧。例如，给定输入<em>I<sub>1</sub></em>he <em>I<sub>2</sub></em>，CNN网络生成了光流场V，然后使用光球场V和<em>I<sub>2</sub></em>，通过backward warping，我们能得到重建帧<em>I<sub>1</sub><sup>‘</sup></em>，且<em>I<sub>1</sub><sup>‘</sup>=T[I<sub>2</sub>,V]</em><br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>–未完待续</p>
+
       
     </div>
     
@@ -364,6 +370,14 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/双流/" rel="tag"># 双流</a>
+          
+            <a href="/tags/无监督/" rel="tag"># 无监督</a>
+          
+        </div>
       
 
       
@@ -434,8 +448,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -461,7 +484,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -472,7 +495,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">31</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -495,6 +518,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hidden双流网络"><span class="nav-number">1.</span> <span class="nav-text">Hidden双流网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#无监督光流学习"><span class="nav-number">1.1.</span> <span class="nav-text">无监督光流学习</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

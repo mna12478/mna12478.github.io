@@ -1,7 +1,9 @@
 ---
 title: Spatial Transformer Networks
 date: 2018-04-21 10:09:01
-categories: 深度学习
+categories: 
+- 深度学习
+- STN
 tags:
 - 仿射变换
 - CNN

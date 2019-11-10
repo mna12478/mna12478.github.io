@@ -1,9 +1,8 @@
 ---
-title: NetVLAD CNN architecture for weakly supervised place recognition
+title: NetVLAD CNN architecture for weakly supervised place recognition (CVPR 2016)
 date: 2019-11-07 21:20:14
 categories: 
 - 动作识别
-- Place Recognition
 - VLAD
 tags:
 - CNN

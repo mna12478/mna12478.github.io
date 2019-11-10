@@ -1,7 +1,9 @@
 ---
 title: 关键点检测
 date: 2018-05-05 10:57:28
-categories: 深度学习
+categories: 
+- 深度学习
+- Keypoint
 tags:
 - 关键点
 - 位姿估计

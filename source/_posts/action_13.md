@@ -8,7 +8,7 @@ tags:
 - CNN
 - Kinetics数据库
 ---
-&emsp;&emsp;由于当前动作识别数据库规模较小，使得大部分方法的性能都不相上下，在网络结构方面没有大的突破，本文在一个新的Kinetics Human Action Video数据库上重新评估了当前的方法，相比于之前的数据库，Kinetics增加了两个数量级的数据，有400个人类动作，每一类有至少400个视频片段，视频来源于YouTube；此外，本文还提出了一个新的双流Inflated 3D卷积网络——I3D，在2D卷积网络的基础上进行inflat，滤波器和pooling的核扩展为3D。
+&emsp;&emsp;由于当前动作识别数据库规模较小，使得大部分方法的性能都不相上下，在网络结构方面没有大的突破，本文在一个新的Kinetics Human Action Video数据库上重新评估了当前的方法，相比于之前的数据库，Kinetics增加了两个数量级的数据，有400个人类动作，每一类有至少400个视频片段，视频来源于YouTube；此外，本文还提出了一个新的双流Inflated 3D卷积网络——I3D，在2D卷积网络的基础上进行inflat，滤波器和pooling的核扩展为3D，并公开了[Tensorflow版本代码](https://github.com/deepmind/kinetics-i3d/)，用到了deepmind自己的[Sonnet](https://github.com/deepmind/sonnet)。有其他人复现了[1](https://github.com/hassony2/kinetics_i3d_pytorch)、[2](https://github.com/piergiaj/pytorch-i3d)个Pytorch版本代码。
 # 动作分类网络
 &emsp;&emsp;现在的视频结构的差异主要在于，卷积层等层的操作是2D（基于图片）还是3D（基于视频）；网络的输入是RGB视频还是也包括预先计算的光流；在2D卷积的网络中，信息是如何在帧之间传递的，可以使用LSTM或沿时间进行的特征集成。这里我们尝试了几种方案，如下图和下表所示。
 ![](/images/I3D/fig_archi.png "几种动作识别的方案，K表示一个视频中帧的总数，N表示视频中相邻帧的子集")
@@ -33,6 +33,74 @@ tags:
 &emsp;&emsp;Kinetics数据库集中于人的动作，而不是活动或者事件，动作类别覆盖了人的动作（单个人），如drawing、drinking、laughing等；人与人之间的动作，如hugging、kissing、shaking hands；人与物品的动作，如opening presents、mowing lawn、washing dishes。有些动作是细粒度的，需要时间推理来区分，例如不同类型的swimming，其他动作需要更加关注物品来识别，如演奏不同种类的乐器。
 &emsp;&emsp;数据库有400个动作类别，每个类别至少400个clip，每个clip都来自一个单独的视频，共24w个训练视频，每个clip持续约10s，没有未剪辑的视频；测试集每个类别包括100个clip。
 # 实验
+## 代码
+&emsp;&emsp;代码中默认的模型是现在ImageNet，后在Kinetics上训练的模型，通过参数可以选择只在Kinetics上训练或者选择只用RGB stream或者光流stream，在checkpoint文件中包括5种checkpoint：flow_imagenet, flow_scratch, rgb_imagenet, rgb_scratch, rgb_scratch_kin600，若只是在Kinetics上训练，那么权重的初始化是使用默认的Sonnet/Tensorflow初始化方法；若权重是在ImageNet上预训练，那么权重是由2D的Inception-V1扩展为3D。RGB和光流stream是分开训练的，各自的loss都是softmax分类loss，有各自的学习率设置方法；测试时，将两个stream组合，以相同的权重添加logits。光流的提取方法：将RGB图像转换为灰度图，然后使用TV-L1算法计算光流，像素值范围截断为[-20,20]，然后归一化到[-1,1]。RGB图像有3个通道，光流有2个通道。label_map和label_map_600是标签文件，分别包括400和600个动作类别。样例代码evaluate_sample.py中有rgb, flow, joint几种模式。3D卷积是用的sonnet.Conv3D()，定义为Unit3D(默认kernel_shape=(1, 1, 1), stride=(1, 1, 1), activation_fn=tf.nn.relu, use_batch_norm=True, use_bias=False)，max-pooling是用的tf.nn.max_pool3d()，RGB网络结构为**Conv3d_1a_7x7->MaxPool3d_2a_3x3->Conv3d_2b_1x1->Conv3d_2c_3x3->MaxPool3d_3a_3x3->Mixed_3b->Mixed_3c->MaxPool3d_4a_3x3->Mixed_4b->Mixed_4c->Mixed_4d->Mixed_4e->Mixed_4f->MaxPool3d_5a_2x2->Mixed_5b->Mixed_5c->Logits**。用tf.variable_scope定义每个**xx**模块,若无特别说明，所有的Conv3D和pooling3d中的padding均为SAME。
+**Conv3d_1a_7x7**: Unit3D(output_channels=64, kernel_shape=[7,7,7], stride=[2,2,2]),  
+**MaxPool3d_2a_3x3**: max_pool3d(ksize=[1, 1, 3, 3, 1], strides=[1, 1, 2, 2, 1]),  
+**Conv3d_2b_1x1**: Unit3D(64, kernel_shape=[1, 1, 1]),  
+**Conv3d_2c_3x3** Unit3D(192, kernel_shape=[3, 3, 3]),  
+**MaxPool3d_3a_3x3**: max_pool3d(ksize=[1, 1, 3, 3, 1], strides=[1, 1, 2, 2, 1]),  
+**Mixed_3b**：各branch第一个网络的输入均为MaxPool3d_3a_3x3的输出，branch内部的“+”表示两个网络串联，第2个网络的输入为第1个网络的输出。用tf.variable_scope定义每个branch。
+branch0: Unit3D(64, kernel_shape=[1, 1, 1])
+branch1: Unit3D(96, kernel_shape=[1, 1, 1])+Unit3D(128, kernel_shape=[3, 3, 3])
+branch2: Unit3D(16, kernel_shape=[1, 1, 1])+Unit3D(32, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(32, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**Mixed_3c**：
+branch0: Unit3D(128, kernel_shape=[1, 1, 1])
+branch1: Unit3D(128, kernel_shape=[1, 1, 1])+Unit3D(192, kernel_shape=[3, 3, 3])
+branch2: Unit3D(32, kernel_shape=[1, 1, 1])+Unit3D(96, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(64, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**MaxPool3d_4a_3x3**：max_pool3d(ksize=[1, 3, 3, 3, 1], strides=[1, 2, 2, 2, 1])
+**Mixed_4b**：
+branch0: Unit3D(192, kernel_shape=[1, 1, 1])
+branch1: Unit3D(96, kernel_shape=[1, 1, 1])+Unit3D(208, kernel_shape=[3, 3, 3])
+branch2: Unit3D(16, kernel_shape=[1, 1, 1])+Unit3D(48, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(64, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**Mixed_4c**：
+branch0: Unit3D(160, kernel_shape=[1, 1, 1])
+branch1: Unit3D(112, kernel_shape=[1, 1, 1])+Unit3D(224, kernel_shape=[3, 3, 3])
+branch2: Unit3D(24, kernel_shape=[1, 1, 1])+Unit3D(64, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(64, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**Mixed_4d**：
+branch0: Unit3D(128, kernel_shape=[1, 1, 1])
+branch1: Unit3D(128, kernel_shape=[1, 1, 1])+Unit3D(256, kernel_shape=[3, 3, 3])
+branch2: Unit3D(24, kernel_shape=[1, 1, 1])+Unit3D(64, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(64, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**Mixed_4e**：
+branch0: Unit3D(112, kernel_shape=[1, 1, 1])
+branch1: Unit3D(144, kernel_shape=[1, 1, 1])+Unit3D(288, kernel_shape=[3, 3, 3])
+branch2: Unit3D(32, kernel_shape=[1, 1, 1])+Unit3D(64, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(64, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**Mixed_4f**：
+branch0: Unit3D(256, kernel_shape=[1, 1, 1])
+branch1: Unit3D(160, kernel_shape=[1, 1, 1])+Unit3D(320, kernel_shape=[3, 3, 3])
+branch2: Unit3D(32, kernel_shape=[1, 1, 1])+Unit3D(128, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(128, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**MaxPool3d_5a_2x2**：max_pool3d(ksize=[1, 2, 2, 2, 1], strides=[1, 2, 2, 2, 1])
+**Mixed_5b**：
+branch0: Unit3D(256, kernel_shape=[1, 1, 1])
+branch1: Unit3D(160, kernel_shape=[1, 1, 1])+Unit3D(320, kernel_shape=[3, 3, 3])
+branch2: Unit3D(32, kernel_shape=[1, 1, 1])+Unit3D(128, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(128, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**Mixed_5c**：
+branch0: Unit3D(384, kernel_shape=[1, 1, 1])
+branch1: Unit3D(192, kernel_shape=[1, 1, 1])+Unit3D(384, kernel_shape=[3, 3, 3])
+branch2: Unit3D(48, kernel_shape=[1, 1, 1])+Unit3D(128, kernel_shape=[3, 3, 3])
+branch3: max_pool3d([1, 3, 3, 3, 1],&ensp;[1, 1, 1, 1, 1])+Unit3D(128, kernel_shape=[1, 1, 1])
+concat([branch_0, branch_1, branch_2, branch_3], 4)
+**Logits**：
+tf.nn.avg_pool3d([1, 2, 7, 7, 1],[1, 1, 1, 1, 1], snt.VALID)+tf.nn.dropout()+Unit3D(num_class, kernel_shape=[1, 1, 1],activation_fn=None, use_batch_norm=False)+（tf.squeeze(axis=[2, 3])，指定此项为True/False)+reduce_mean(axis=1)
+**Prediction**：tf.nn.softmax()。若为原来的Inception-V1，那么这个模块是存在的；若只是RGB或光流stream，那么到上一层Logits即可。
+&emsp;&emsp;以上即为I3D的模型，模型搭建好后，使用variable.name.replace(':0', '')替换名称。如果eval_type=rgb或rgb600，则只将rgb_logits作为model_logits；若eval_type=flow，则只将flow_logits作为model_logits，若eval_type=joint，则model_logits=rgb_logits+flow_logits，然后将model_logits输入到softmax中。若需要载入预训练模型，则在rgb或光流stream中导入对应的权重文件即可。
+## 实验结果
 ![](/images/I3D/tab_comp.png "除3D-ConvNet是从头开始训练外，其他所有的模型都是基于ImageNet预训练的Inception-V1，在单独RGB和光流stream的双流模型可以看成是使用卷积网络的单个baseline，输入为均匀采样的25帧，最终的预测结果是平均值")
 &emsp;&emsp;测试使用的是UCF-101和HMDB51的split1，以及Kinetics的held-out测试集，从结果来看，首先，新的I3D模型不是在所有的数据库中都是最好的，无论是使用RGB还是RGB+光流的模式；第二，所有模型在Kinetics上的表现远低于UCF-101，也说明了两个数据库难度的差异，但是比HMDB51的表现好，这可能是因为HMDB51缺少训练数据，或者这个数据库故意做的比较难：许多clip在相同的场景中有不同的动作，如“拔剑”的例子和“拔剑”和“练剑”是来自同一段视频。第三，不同结构的排序基本一致。另外，双流网络在所有数据库中表现都很好，但是RGB和光流的相对值在Kinetics和其他数据库中完全不同，在UCF-101中，单独的光流的贡献，稍微高于RGB，视觉上来看，Kinetics有更多的相机运动，会使运动stream变得困难。相比于其他结构，I3D从光流stream受益更多，可能因为有更长的时序感受野和更集成的时序特征。本文还评估了从ImageNet预训练和从头训练两种方法来训练Kinetics，结果如下所示，ImageNet预训练的方法在所有情况下都是有帮助的，尤其对于RGB stream。
 ![](/images/I3D/tab_test.png "")

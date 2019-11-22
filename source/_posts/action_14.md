@@ -9,7 +9,7 @@ tags:
 ---
 &emsp;&emsp;当前的3D CNN的网络计算量比较大，而且相比于2D CNN，模型较大：如11层的C3D网络模型大小为321MB，而ResNet-152只有235MB。更重要的是，使用Sports-1M来finetuneResNet-152的效果，比从头开始训练C3D的效果好。另一种提取时空特征的方法是使用RNN，但这种方法只建立了高层的高级特征的时序联系，并没有使用低层的低级特征，如corner、edge等。
 ![](/images/P3D/fig_comp.png "")
-&emsp;&emsp;本文就是为了解决上述问题，将3D卷积解耦成2D空间卷积来编码空间信息和2D时序卷积，设计了bottleneck building blocks，每个block的核心模块是一个1\*3\*3和3\*1\*1卷积的组合，组合的方式为并列或者级联，来代替一个标准的3\*3\*3卷积，也成为伪3D卷积；比外，还提出了一个Pseudo-3D Residual Net (P3D ResNet)模型，整个网络类似ResNet的格式，并且由block组成。
+&emsp;&emsp;本文就是为了解决上述问题，将3D卷积解耦成2D空间卷积来编码空间信息和2D时序卷积，设计了bottleneck building blocks，每个block的核心模块是一个1\*3\*3和3\*1\*1卷积的组合，组合的方式为并列或者级联，来代替一个标准的3\*3\*3卷积，也成为伪3D卷积；比外，还提出了一个Pseudo-3D Residual Net (P3D ResNet)模型，整个网络类似ResNet的格式，并且由block组成。作者公开了[Caffe版本](https://github.com/ZhaofanQiu/pseudo-3d-residual-networks)的代码，其他还有复现的[Pytorch版本](https://github.com/qijiezhao/pseudo-3d-pytorch)和[TensorFlow版本](https://github.com/Ontheway361/P3D)。
 # P3D blocks和P3D ResNet
 &emsp;&emsp;残差网络：x<sub>t+1</sub>=h(x<sub>t</sub>)+F(x<sub>t</sub>)，其中h(x<sub>t</sub>)是一个直接映射，F是一个非线性残差函数，所以公式也可以写成(I+F)\*x<sub>t</sub>=x<sub>t</sub>+F\*x<sub>t</sub>:=x<sub>t</sub>+F(x<sub>t</sub>)=x<sub>t+1</sub>，其中F\*x<sub>t</sub>表示对x<sub>t</sub>直接运用残差函数F的结果。
 &emsp;&emsp;给定视频，大小为c\*l\*h\*w，分别表示channel、clip长度、高度和宽度，在搭建P3D模块时，类似残差块，但需要考虑，空间卷积和时间卷积是否应该直接或者间接影响对方，直接影响也就是用级联的方式，间接影响是Parallel的方式；另外，两个filter的输出是否应该直接影响最终的输出，直接影响表示每种类型的filter的输出应该直接与最终的输出相连。基于以上两个考虑，提出了三种P3D block的搭建方法，如下所示。

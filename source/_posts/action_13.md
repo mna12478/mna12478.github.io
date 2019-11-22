@@ -3,10 +3,12 @@ title: Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset (CVPR
 date: 2019-11-11 22:50:49
 categories: 
 - 动作识别
-- 光流计算
+- Fusion
+- 双流
 tags:
 - CNN
 - Kinetics数据库
+- 光流计算
 ---
 &emsp;&emsp;由于当前动作识别数据库规模较小，使得大部分方法的性能都不相上下，在网络结构方面没有大的突破，本文在一个新的Kinetics Human Action Video数据库上重新评估了当前的方法，相比于之前的数据库，Kinetics增加了两个数量级的数据，有400个人类动作，每一类有至少400个视频片段，视频来源于YouTube；此外，本文还提出了一个新的双流Inflated 3D卷积网络——I3D，在2D卷积网络的基础上进行inflat，滤波器和pooling的核扩展为3D，并公开了[Tensorflow版本代码](https://github.com/deepmind/kinetics-i3d/)，用到了deepmind自己的[Sonnet](https://github.com/deepmind/sonnet)。有其他人复现了[1](https://github.com/hassony2/kinetics_i3d_pytorch)、[2](https://github.com/piergiaj/pytorch-i3d)个Pytorch版本代码。
 # 动作分类网络

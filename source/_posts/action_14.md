@@ -3,9 +3,10 @@ title: Learning Spatio-Temporal Representation with Pseudo-3D Residual Networks
 date: 2019-11-22 15:14:24
 categories: 
 - 动作识别
-- 光流计算
+- 3D卷积
 tags:
 - P3D ResNet
+- ResNet
 ---
 &emsp;&emsp;当前的3D CNN的网络计算量比较大，而且相比于2D CNN，模型较大：如11层的C3D网络模型大小为321MB，而ResNet-152只有235MB。更重要的是，使用Sports-1M来finetuneResNet-152的效果，比从头开始训练C3D的效果好。另一种提取时空特征的方法是使用RNN，但这种方法只建立了高层的高级特征的时序联系，并没有使用低层的低级特征，如corner、edge等。
 ![](/images/P3D/fig_comp.png "")

@@ -5,6 +5,8 @@ categories:
 - 动作识别
 - 骨架
 tags:
+- LSTM
+- 图卷积
 ---
 &emsp;&emsp;本文提出了一种基于骨架的动作识别方法，Attention Enhanced Graph Convolutional LSTM Network (AGC-LSTM)，不仅能提取空间和时间的判别性特征，而且能探索其中的相互关系；还提出了一种时序分级结构来增加模型顶层的时序感受野，提高学习高级语义表示的能力，而且减少计算量；另外，为了选择有判别性的空间信息，使用attention机制来增加每个层关键关节点的信息。
 &emsp;&emsp;动作识别的方法有很多，有些是基于RGB视频，有些是基于3D骨架数据。基于RGB视频的方法主要是从RGB图像和光流数据中建模时空表示，但是这种方法在处理背景复杂、亮度变化和外观变化场景时会有局限性；3D骨架用一系列关键关节点的3D坐标位置来表示身体结构，尽管不包含颜色信息，但是没有RGB视频所受的那些限制，允许建模更有判别性的时序特点，而且有研究和实验（Visual perception of biological motion and a model for its analysis）表明关键关节点能提供人类动作的高度有效的信息，而且现在有很多算法能轻易获取到人的关节点数据。

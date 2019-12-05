@@ -1,5 +1,5 @@
 ---
-title: STM: SpatioTemporal and Motion Encoding for Action Recognition (ICCV 2019)
+title: STM SpatioTemporal and Motion Encoding for Action Recognition (ICCV 2019)
 date: 2019-12-04 18:51:14
 categories: 
 - 动作识别

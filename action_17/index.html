@@ -79,14 +79,19 @@
 
 
 
+<meta name="description" content="&amp;emsp;&amp;emsp;之前的动作识别算法都是将识别当成分类问题，更多地关注怎么由网络获取运动，却忽略了是什么使得动作变得独特。本文更多地关注动作识别问题本身，展示了动作识别是如何需要对更精细的细节有更多的敏感度，不同于以前的动作识别算法，本文的方法专为细粒度的动作分类而设计。以前的方法多事在顶层使用一个全局平均池化和线性分类层，而本文能提取和使用细粒度信息来分类，这是全局平均池化无法做到的，本文">
 <meta property="og:type" content="article">
-<meta property="og:title" content="action_17">
+<meta property="og:title" content="Action recognition with spatial-temporal discriminative filter banks (ICCV 2019)">
 <meta property="og:url" content="https://mna12478.github.io/action_17/index.html">
 <meta property="og:site_name" content="个人笔记">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;之前的动作识别算法都是将识别当成分类问题，更多地关注怎么由网络获取运动，却忽略了是什么使得动作变得独特。本文更多地关注动作识别问题本身，展示了动作识别是如何需要对更精细的细节有更多的敏感度，不同于以前的动作识别算法，本文的方法专为细粒度的动作分类而设计。以前的方法多事在顶层使用一个全局平均池化和线性分类层，而本文能提取和使用细粒度信息来分类，这是全局平均池化无法做到的，本文">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-05T12:18:26.823Z">
+<meta property="og:image" content="https://mna12478.github.io/images/bank/fig_samp.png">
+<meta property="og:updated_time" content="2019-12-05T14:43:54.459Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="action_17">
+<meta name="twitter:title" content="Action recognition with spatial-temporal discriminative filter banks (ICCV 2019)">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;之前的动作识别算法都是将识别当成分类问题，更多地关注怎么由网络获取运动，却忽略了是什么使得动作变得独特。本文更多地关注动作识别问题本身，展示了动作识别是如何需要对更精细的细节有更多的敏感度，不同于以前的动作识别算法，本文的方法专为细粒度的动作分类而设计。以前的方法多事在顶层使用一个全局平均池化和线性分类层，而本文能提取和使用细粒度信息来分类，这是全局平均池化无法做到的，本文">
+<meta name="twitter:image" content="https://mna12478.github.io/images/bank/fig_samp.png">
 
 
 
@@ -122,7 +127,7 @@
 
 
 
-  <title>action_17 | 个人笔记</title>
+  <title>Action recognition with spatial-temporal discriminative filter banks (ICCV 2019) | 个人笔记</title>
   
 
 
@@ -256,7 +261,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">action_17</h1>
+          <h1 class="post-title" itemprop="name headline">Action recognition with spatial-temporal discriminative filter banks (ICCV 2019)</h1>
         
 
         <div class="post-meta">
@@ -278,6 +283,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/动作识别/" itemprop="url" rel="index">
+                    <span itemprop="name">动作识别</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -306,7 +333,8 @@
       
 
       
-        
+        <p>&emsp;&emsp;之前的动作识别算法都是将识别当成分类问题，更多地关注怎么由网络获取运动，却忽略了是什么使得动作变得独特。本文更多地关注动作识别问题本身，展示了动作识别是如何需要对更精细的细节有更多的敏感度，不同于以前的动作识别算法，本文的方法专为细粒度的动作分类而设计。以前的方法多事在顶层使用一个全局平均池化和线性分类层，而本文能提取和使用细粒度信息来分类，这是全局平均池化无法做到的，本文提出了三种分类的分支：第一个分支是最常用的全局平均池化；第二个和第三个共享一组卷积、空间上采样和max-pooling层来帮助提取细粒度信息，但分类器不同。这三个分支是以端到端的方式联合训练，这个新的设计能兼容大多数动作识别算法，能用于基于2D和3D CNN的网络。<br><img src="/images/bank/fig_samp.png" alt=""><br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>&emsp;&emsp;<br>——未完待续</p>
+
       
     </div>
     
